@@ -31,11 +31,15 @@ WORKDIR /app
 
 COPY --from=backend-builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/backend
 ENV PYTHONUNBUFFERED=1
 
-# Copy backend source code
+# Copy application source code
 COPY backend/ /app/backend/
+COPY attack_simulator/ /app/attack_simulator/
+COPY device_simulator/ /app/device_simulator/
+COPY simulation/ /app/simulation/
+COPY scripts/ /app/scripts/
 COPY .env.example /app/.env.example
 
 # Copy compiled frontend assets into /app/frontend_dist
