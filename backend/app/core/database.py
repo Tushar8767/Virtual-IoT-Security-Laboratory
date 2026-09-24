@@ -140,7 +140,7 @@ class _InMemoryCollection:
     async def update_one(self, query: Dict[str, Any], update: Dict[str, Any]) -> Any:
         return await self.find_one_and_update(query, update)
 
-    async def aggregate(self, pipeline: List[Dict[str, Any]]) -> _InMemoryCursor:
+    def aggregate(self, pipeline: List[Dict[str, Any]]) -> _InMemoryCursor:
         # Simple status aggregator
         counts: Dict[str, int] = {}
         for item in self._store.values():

@@ -79,11 +79,19 @@ class DeviceRepository:
 
     async def get_status_summary(self) -> dict:
         """Return counts of devices by status."""
-        pipeline = [
-            {"$group": {"_id": "$status", "count": {"$sum": 1}}},
-        ]
-        results = await self.collection.aggregate(pipeline).to_list(length=None)
-        summary = {r["_id"]: r["count"] for r in results}
+        try:
+            pipeline = [
+                {"$group": {"_id": "$status", "count": {"$sum": 1}}},
+            ]
+            agg = self.collection.aggregate(pipeline)
+            if hasattr(agg, "__await__"):
+                agg = await agg
+            results = await agg.to_list(length=None)
+            summary = {r["_id"]: r["count"] for r in results}
+        except Exception as e:
+            logger.warning("get_status_summary_failed", error=str(e))
+            summary = {}
+
         total = sum(summary.values())
         return {
             "total": total,
@@ -94,6 +102,7 @@ class DeviceRepository:
             "suspended": summary.get("SUSPENDED", 0),
             "revoked": summary.get("REVOKED", 0),
         }
+
 
     # ----------------------------------------------------------
     # Write
