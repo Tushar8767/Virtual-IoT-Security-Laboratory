@@ -27,16 +27,22 @@ export const DashboardPage: React.FC = () => {
   const fetchDevices = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/devices/`);
-      const data = await res.json();
-      setDevices(data.devices || []);
+      if (res.ok) {
+        const data = await res.json();
+        setDevices(data.devices || []);
+      }
 
       const sumRes = await fetch(`${API_BASE}/api/devices/summary`);
-      const sumData = await sumRes.json();
-      setSummary(sumData);
+      if (sumRes.ok) {
+        const sumData = await sumRes.json();
+        setSummary(sumData);
+      }
 
       const labRes = await fetch(`${API_BASE}/api/lab/status`);
-      const labData = await labRes.json();
-      setSimRunning(labData?.simulation?.running || false);
+      if (labRes.ok) {
+        const labData = await labRes.json();
+        setSimRunning(labData?.simulation?.running || false);
+      }
 
       const alertRes = await fetch(`${API_BASE}/api/security/alerts?status=ACTIVE`);
       if (alertRes.ok) {
@@ -61,6 +67,7 @@ export const DashboardPage: React.FC = () => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchDevices();
@@ -121,12 +128,16 @@ export const DashboardPage: React.FC = () => {
   const toggleSimulation = async () => {
     try {
       const endpoint = simRunning ? '/api/lab/stop' : '/api/lab/start';
-      await fetch(`${API_BASE}${endpoint}`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}${endpoint}`, { method: 'POST' });
+      if (res.ok) {
+        setSimRunning((prev) => !prev);
+      }
       await fetchDevices();
     } catch (err) {
       console.error('Simulation toggle failed', err);
     }
   };
+
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
