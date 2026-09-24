@@ -26,6 +26,9 @@ from app.schemas.device import (
     DeviceProvisionResponse,
     DeviceStatusSummary,
 )
+from app.models.device import DeviceCapability
+from app.core.auth import authenticate_device, require_capability
+
 from app.services.device_service import (
     DeviceService,
     DeviceNotFoundError,
@@ -280,3 +283,32 @@ async def revoke_device(
         raise _not_found(device_id)
     except InvalidStateTransitionError as e:
         raise _bad_transition(str(e))
+
+
+
+
+@router.post(
+    "/{device_id}/command",
+    summary="Send command to device (Requires Capability & Authentication)",
+)
+async def send_device_command(
+    device_id: str,
+    command: dict = Body(..., examples=[{"action": "SET_STATE", "value": "OFF"}]),
+    device: dict = Depends(require_capability(DeviceCapability.RECEIVE_COMMANDS)),
+):
+    """
+    Sends an authorized control command to a device.
+    Caller must authenticate via X-Device-Id / X-API-Key and possess RECEIVE_COMMANDS capability.
+    """
+    if device["device_id"] != device_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot execute command on a different device",
+        )
+
+    logger.info("device_command_executed", device_id=device_id, command=command)
+    return {
+        "status": "COMMAND_ACCEPTED",
+        "device_id": device_id,
+        "command": command,
+    }

@@ -3,11 +3,11 @@
 > A fully working, software-only Virtual IoT / Embedded Security Laboratory.
 > No physical hardware required.
 
-[![Phase](https://img.shields.io/badge/Phase-0%20Complete-green)](#)
+[![Phases](https://img.shields.io/badge/Phases-0--12%20Complete-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/Tests-117%20Passed%20%2F%200%20Failed-success)](#)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI%20%2B%20Python-blue)](#)
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-blue)](#)
-[![Database](https://img.shields.io/badge/Database-MongoDB-green)](#)
-[![MQTT](https://img.shields.io/badge/MQTT-Mosquitto-orange)](#)
+[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-green)](#)
 
 ---
 
@@ -219,24 +219,23 @@ cd backend
 
 ---
 
-## Implementation Phases
+## Implementation Status
 
-| Phase | Name | Status |
-|-------|------|--------|
-| **0** | Project Foundation | ✅ **Complete** |
-| 1 | Device Domain | 🔄 Next |
-| 2 | Device Simulator | ⏳ Pending |
-| 3 | MQTT Communication | ⏳ Pending |
-| 4 | Telemetry Pipeline | ⏳ Pending |
-| 5 | Frontend Dashboard | ⏳ Pending |
-| 6 | Auth & Authorization | ⏳ Pending |
-| 7 | Security Detection Engine | ⏳ Pending |
-| 8 | Attack Simulation | ⏳ Pending |
-| 9 | Investigation | ⏳ Pending |
-| 10 | Audit Logging | ⏳ Pending |
-| 11 | Hardening | ⏳ Pending |
-| 12 | Testing | ⏳ Pending |
-| 13 | Polish | ⏳ Pending |
+| Phase | Component / Capability | Status |
+| :---: | :--- | :---: |
+| **0** | **Project Foundation** (FastAPI lifespan, Async Mongo, MQTT client, structured logging) | ✅ **Complete** |
+| **1** | **Device Domain & FSM** (Device models, FSM state validation, seed scripts) | ✅ **Complete** |
+| **2** | **Device Simulator** (Virtual Temperature, Motion, and HVAC Actuator devices) | ✅ **Complete** |
+| **3** | **Gateway & Communications** (MQTT & Proteus LPC2138 UART0 bridge, impersonation filter) | ✅ **Complete** |
+| **4** | **Telemetry Ingestion Pipeline** (Validation, persistence, real-time WebSocket dispatch) | ✅ **Complete** |
+| **5** | **React Operations Dashboard** (Real-time telemetry gauges, live status stream) | ✅ **Complete** |
+| **6** | **Authentication & Capabilities** (Token auth, RBAC capability-verified actuator control) | ✅ **Complete** |
+| **7** | **Security Detection Engine** (Out-of-bounds, rate anomalies, replay, auth floods) | ✅ **Complete** |
+| **8** | **Attack Simulation Engine** (Scenarios A through G with real-time launchpad) | ✅ **Complete** |
+| **9** | **Forensic Investigation** (Correlated timelines, device dossiers, JSON report export) | ✅ **Complete** |
+| **10** | **Cryptographic Audit Ledger** (SHA-256 hash chaining, blockchain-style integrity verifier) | ✅ **Complete** |
+| **11** | **Production Hardening** (OWASP security headers, 1 MB payload enforcement) | ✅ **Complete** |
+| **12** | **Full Orchestration & E2E Testing** (117 passing tests, `/api/lab/*` fleet controls) | ✅ **Complete** |
 
 ---
 

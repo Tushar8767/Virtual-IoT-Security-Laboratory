@@ -1,9 +1,8 @@
-import './index.css'
-import { LabStatusPage } from './pages/LabStatus'
+import './index.css';
+import { DashboardPage } from './pages/Dashboard';
 
 function App() {
-  return <LabStatusPage />
+  return <DashboardPage />;
 }
 
-export default App
-
+export default App;

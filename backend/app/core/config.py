@@ -6,7 +6,7 @@ Defaults are safe for local development only.
 Use .env file (copy from .env.example) to configure.
 """
 
-from typing import List
+from typing import List, Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     # --- Backend API ---
     BACKEND_HOST: str = "0.0.0.0"
     BACKEND_PORT: int = 8000
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]
@@ -76,22 +76,17 @@ class Settings(BaseSettings):
     @field_validator("DEBUG", mode="before")
     @classmethod
     def coerce_debug(cls, v):
-        """
-        Safely coerce DEBUG to bool.
-        Handles system env vars that set DEBUG to non-bool strings
-        (e.g. Node.js sets DEBUG=release, DEBUG=* etc.)
-        """
         if isinstance(v, bool):
             return v
         if isinstance(v, str):
             return v.lower() in ("1", "true", "yes", "on")
         return bool(v)
 
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @field_validator("BACKEND_CORS_ORIGINS", mode="after")
     @classmethod
     def parse_cors_origins(cls, v):
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",")]
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
 
     @field_validator("SECRET_KEY", mode="after")

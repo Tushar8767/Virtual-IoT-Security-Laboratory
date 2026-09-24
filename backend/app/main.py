@@ -4,6 +4,15 @@ Virtual IoT Security Laboratory — Backend Application Entry Point
 This module initializes the FastAPI application, configures middleware,
 registers routers, and manages application lifecycle events.
 """
+import sys
+from pathlib import Path
+
+# Ensure both project root and backend directory are in sys.path
+_ROOT = Path(__file__).resolve().parent.parent.parent
+_BACKEND = Path(__file__).resolve().parent.parent
+for _p in [str(_ROOT), str(_BACKEND)]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 import structlog
 from contextlib import asynccontextmanager
@@ -15,8 +24,10 @@ from app.core.config import settings
 from app.core.logging import configure_logging
 from app.core.database import connect_to_mongodb, close_mongodb_connection
 from app.core.mqtt_client import connect_mqtt, disconnect_mqtt
-from app.api.routes import devices, telemetry, security, scenarios, lab, audit
+from app.api.routes import devices, telemetry, security, scenarios, lab, audit, investigation
 from app.api.websocket import router as websocket_router
+from app.core.middleware import SecurityHeadersMiddleware
+
 
 # Configure structured logging before anything else
 configure_logging()
@@ -94,6 +105,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Trusted hosts — lock down in production only
 if settings.APP_ENV == "production":
     app.add_middleware(
@@ -113,7 +126,7 @@ app.include_router(scenarios.router, prefix=API_PREFIX)
 app.include_router(lab.router, prefix=API_PREFIX)
 app.include_router(audit.router, prefix=API_PREFIX)
 app.include_router(websocket_router)
-
+app.include_router(investigation.router, prefix="/api")
 
 # ============================================================
 # Health / Root
