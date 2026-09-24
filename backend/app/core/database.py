@@ -32,10 +32,23 @@ class _InMemoryCursor:
         self._docs = list(docs)
 
     def sort(self, key_or_list: Any, direction: Optional[int] = None) -> "_InMemoryCursor":
-        # Basic sorting support
+        field = None
+        reverse = False
         if isinstance(key_or_list, str):
+            field = key_or_list
             reverse = direction == -1
-            self._docs.sort(key=lambda d: d.get(key_or_list, 0) or 0, reverse=reverse)
+        elif isinstance(key_or_list, list) and key_or_list and isinstance(key_or_list[0], (list, tuple)):
+            field = key_or_list[0][0]
+            reverse = key_or_list[0][1] == -1
+
+        if field:
+            def _sort_key(d):
+                val = d.get(field)
+                if val is None:
+                    return ""
+                return str(val)
+
+            self._docs.sort(key=_sort_key, reverse=reverse)
         return self
 
     def skip(self, count: int) -> "_InMemoryCursor":
@@ -182,10 +195,19 @@ async def connect_to_mongodb() -> None:
     global _client, _database, _is_in_memory
 
     try:
+        client_kwargs: Dict[str, Any] = {
+            "maxPoolSize": settings.MONGODB_MAX_POOL_SIZE,
+            "serverSelectionTimeoutMS": 10000,
+        }
+        try:
+            import certifi
+            client_kwargs["tlsCAFile"] = certifi.where()
+        except Exception:
+            pass
+
         client = AsyncIOMotorClient(
             settings.MONGODB_URI,
-            maxPoolSize=settings.MONGODB_MAX_POOL_SIZE,
-            serverSelectionTimeoutMS=2000,
+            **client_kwargs,
         )
         # Probe connection
         await client.admin.command("ping")
@@ -212,6 +234,83 @@ async def connect_to_mongodb() -> None:
             database=settings.MONGODB_DATABASE,
             note="Running in development fallback mode (no external MongoDB required)",
         )
+
+    await _auto_seed_default_devices()
+
+
+async def _auto_seed_default_devices() -> None:
+    """Ensure standard reference fleet devices exist in database on startup."""
+    if _database is None:
+        return
+    try:
+        col = _database["devices"]
+        existing = await col.count_documents({})
+        if existing > 0:
+            return
+
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        defaults = [
+            {
+                "device_id": "LPC2138-TEMP-001",
+                "device_name": "Proteus LPC2138 Temperature Sensor",
+                "device_type": "temperature_sensor",
+                "status": "ONLINE",
+                "trust_state": "VERIFIED",
+                "firmware_version": "1.0.0",
+                "heartbeat_interval_seconds": 15,
+                "capabilities": ["READ_TELEMETRY"],
+                "last_seen": now.isoformat(),
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+                "metadata": {"source": "proteus_simulation", "mcu": "LPC2138"},
+            },
+            {
+                "device_id": "PY-TEMP-001",
+                "device_name": "Virtual Facility Temperature Sensor",
+                "device_type": "temperature_sensor",
+                "status": "ONLINE",
+                "trust_state": "VERIFIED",
+                "firmware_version": "1.0.0",
+                "heartbeat_interval_seconds": 10,
+                "capabilities": ["READ_TELEMETRY"],
+                "last_seen": now.isoformat(),
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+            },
+            {
+                "device_id": "PY-MOTION-001",
+                "device_name": "Virtual Security Motion Detector",
+                "device_type": "motion_sensor",
+                "status": "ONLINE",
+                "trust_state": "VERIFIED",
+                "firmware_version": "1.0.0",
+                "heartbeat_interval_seconds": 10,
+                "capabilities": ["READ_TELEMETRY"],
+                "last_seen": now.isoformat(),
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+            },
+            {
+                "device_id": "PY-ACTUATOR-001",
+                "device_name": "Virtual Facility Smart HVAC Actuator",
+                "device_type": "actuator",
+                "status": "ONLINE",
+                "trust_state": "VERIFIED",
+                "firmware_version": "1.0.0",
+                "heartbeat_interval_seconds": 10,
+                "capabilities": ["READ_TELEMETRY", "RECEIVE_COMMANDS"],
+                "last_seen": now.isoformat(),
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+            },
+        ]
+        for dev in defaults:
+            await col.insert_one(dev)
+        logger.info("default_devices_auto_seeded", count=len(defaults))
+    except Exception as e:
+        logger.warning("auto_seed_devices_skipped", reason=str(e))
+
 
 
 async def close_mongodb_connection() -> None:

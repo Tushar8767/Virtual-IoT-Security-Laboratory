@@ -13,6 +13,7 @@ pydantic-settings==2.7.0
 # --- Database ---
 motor==3.7.0           # Async MongoDB driver (requires pymongo>=4.9,<4.11)
 pymongo==4.10.1        # MongoDB sync driver (for scripts)
+certifi>=2024.12.14    # Mozilla CA bundle for Atlas TLS
 
 # --- MQTT ---
 aiomqtt==2.3.0         # Async MQTT client (wraps paho-mqtt)
