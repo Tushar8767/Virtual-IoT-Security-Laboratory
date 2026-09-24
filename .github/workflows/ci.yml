@@ -1,0 +1,66 @@
+name: CI Pipeline — IoT Security Laboratory
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  backend-tests:
+    name: Backend Test Suite (Pytest)
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run Pytest Suite
+        env:
+          MONGODB_URI: mongodb://localhost:27017
+          MONGODB_DATABASE: iot_security_lab_test
+          APP_ENV: testing
+          SECRET_KEY: test_secret_key_ci_environment_32chars_min
+          DEVICE_PROVISIONING_SECRET: test_provisioning_secret_ci_32chars
+        run: |
+          python -m pytest backend/tests/ device_simulator/tests/ -v
+
+  frontend-build:
+    name: Frontend TypeScript & Vite Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Type Check & Production Build
+        working-directory: ./frontend
+        run: npm run build

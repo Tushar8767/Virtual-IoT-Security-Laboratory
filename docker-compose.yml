@@ -59,50 +59,53 @@ services:
 
   # ----------------------------------------------------------
   # Backend — FastAPI Application
-  # (Uncomment to run backend in Docker; see README for local dev)
   # ----------------------------------------------------------
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: iot-lab-backend
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8000:8000"
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - MONGODB_URI=mongodb://mongodb:27017
-  #     - MQTT_BROKER_HOST=mosquitto
-  #   depends_on:
-  #     mongodb:
-  #       condition: service_healthy
-  #     mosquitto:
-  #       condition: service_healthy
-  #   networks:
-  #     - iot-lab-network
-  #   volumes:
-  #     - ./backend:/app
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: iot-lab-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DEBUG=false
+      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_DATABASE=iot_security_lab
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+      - BACKEND_CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=default_lab_secret_key_change_in_production_32chars
+      - DEVICE_PROVISIONING_SECRET=default_provisioning_secret_change_32chars
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - iot-lab-network
 
   # ----------------------------------------------------------
-  # Frontend — React/Vite Dashboard
-  # (Uncomment to run frontend in Docker; see README for local dev)
+  # Frontend — React Dashboard
   # ----------------------------------------------------------
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: iot-lab-frontend
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5173:5173"
-  #   environment:
-  #     - VITE_API_BASE_URL=http://localhost:8000
-  #     - VITE_WS_URL=ws://localhost:8000/ws
-  #   depends_on:
-  #     - backend
-  #   networks:
-  #     - iot-lab-network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: iot-lab-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_WS_URL=ws://localhost:8000/ws
+    depends_on:
+      - backend
+    networks:
+      - iot-lab-network
+
 
 # ----------------------------------------------------------
 # Volumes

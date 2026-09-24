@@ -1,0 +1,5 @@
+# ============================================================
+# Virtual IoT Security Laboratory — Python Dependencies
+# ============================================================
+# Installs backend, device simulator, attack simulator, and tests.
+-r backend/requirements.txt

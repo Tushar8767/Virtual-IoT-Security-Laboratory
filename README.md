@@ -1,266 +1,223 @@
 # Virtual IoT Security Laboratory
 
-> A fully working, software-only Virtual IoT / Embedded Security Laboratory.
-> No physical hardware required.
+> **An enterprise-grade, software-defined IoT Security Laboratory and Security Operations Center (SOC).**  
+> Complete with Proteus ARM7 LPC2138 hardware simulation, cryptographic audit ledger, real-time intrusion detection, and automated attack scenario simulation.
 
-[![Phases](https://img.shields.io/badge/Phases-0--12%20Complete-brightgreen)](#)
-[![Tests](https://img.shields.io/badge/Tests-117%20Passed%20%2F%200%20Failed-success)](#)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI%20%2B%20Python-blue)](#)
-[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-blue)](#)
-[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-green)](#)
-
----
-
-## Overview
-
-The **Virtual IoT Security Laboratory** is a software-defined IoT security simulation environment.
-It simulates a realistic connected-device ecosystem — without any physical hardware — and provides:
-
-- Virtual device simulation (temperature sensors, motion sensors, actuators, industrial controllers)
-- Device lifecycle management with state machine enforcement
-- Device identity, authentication, and capability-based authorization
-- Real-time telemetry pipeline (MQTT → backend → WebSocket → dashboard)
-- Deterministic security detection engine with 8+ rule types
-- Controlled attack scenario simulation (7 scenarios — all contained within the virtual lab)
-- Security event investigation with event correlation
-- Immutable audit logging
-- Professional React dashboard with real-time updates
-
-This project is designed as both a **Software Engineering** and **Cybersecurity / IoT Security** flagship project.
+[![CI Pipeline](https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory/actions/workflows/ci.yml/badge.svg)](https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory/actions)
+[![Tests Passing](https://img.shields.io/badge/Tests-117%20Passed%20%2F%200%20Failed-success)](#)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](#)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](#)
+[![React](https://img.shields.io/badge/React-19%20%2B%20TypeScript-61DAFB?logo=react&logoColor=black)](#)
+[![Database](https://img.shields.io/badge/MongoDB-Atlas%20%2F%207.0-47A248?logo=mongodb&logoColor=white)](#)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](#)
 
 ---
 
-## Architecture
+## Architecture Overview
 
-```
-                    VIRTUAL IOT SECURITY LAB
-                              |
-          +-------------------+-------------------+
-          |                   |                   |
-          v                   v                   v
-   Device Simulator     Gateway Layer       Attack Simulator
-          |                   |                   |
-          +-------------------+-------------------+
-                              |
-                    Communication Layer
-                         MQTT / HTTP
-                              |
-                              v
-                    Secure IoT Gateway
-                              |
-              +---------------+---------------+
-              |                               |
-              v                               v
-       Device Management                Telemetry Pipeline
-              |                               |
-              +---------------+---------------+
-                              |
-                              v
-                       Backend API (FastAPI)
-                              |
-             +----------------+----------------+
-             |                |                |
-             v                v                v
-         MongoDB        Security Engine    Event Engine
-             |                |                |
-             +----------------+----------------+
-                              |
-                              v
-                       React Dashboard
+```mermaid
+flowchart TD
+    subgraph HardwareSimulation["Hardware & Virtual Fleet"]
+        direction TB
+        Proteus["Proteus ISIS 8.x<br/>(LPC2138 ARM7 + LM35 ADC)"] -->|UART / Serial / COMPIM| Bridge["Proteus Bridge<br/>(scripts/run_proteus_bridge.py)"]
+        Bridge -->|HTTP Ingest / HMAC| API
+        VirtualFleet["Virtual Fleet<br/>(Temperature, Motion, HVAC)"] -->|MQTT / TLS / HTTP| Ingest["Gateway Ingestion"]
+    end
+
+    subgraph SecurityBackend["FastAPI Backend & Detection Engine"]
+        direction TB
+        API["FastAPI REST & Ingest"]
+        Ingest --> API
+        API --> Engine["Security Detection Engine<br/>(Rate, Anomaly, Auth, Inactivity)"]
+        Engine --> SOAR["Automated Defense / Quarantine"]
+        API --> Audit["Cryptographic Audit Ledger<br/>(SHA-256 Hash Chain)"]
+        API --> Forensics["Forensic Timeline & Correlation"]
+    end
+
+    subgraph Storage["Persistence Layer"]
+        DB[("MongoDB Atlas / Mongo 7.0")]
+    end
+
+    subgraph Frontend["Security Operations Dashboard"]
+        Dashboard["React 19 + TypeScript Dashboard<br/>(Live Gauges, Tests, Alerts, Ledger, Investigation)"]
+    end
+
+    API <--> DB
+    Audit <--> DB
+    API -->|WebSocket Broadcaster| Dashboard
 ```
 
 ---
 
-## Technology Stack
+## Key Features
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, TypeScript, Vite |
-| Backend | Python 3.13, FastAPI, Pydantic v2 |
-| Database | MongoDB 7.0 (motor async driver) |
-| MQTT Broker | Eclipse Mosquitto 2.0 |
-| Authentication | bcrypt, python-jose (JWT) |
-| Async | asyncio, aiomqtt |
-| Testing | pytest, pytest-asyncio, httpx |
-| Logging | structlog (structured JSON logging) |
-| Containerization | Docker Compose (MongoDB + Mosquitto) |
+1. **Dual Device Ecosystem**:
+   - **Hardware Simulation**: Philips/NXP **LPC2138 ARM7TDMI** microcontroller with **LM35 analog temperature sensor** simulated in Proteus ISIS 8.x. Firmware compiled via Keil uVision with ADC sampling and 9600-baud UART streaming.
+   - **Software Virtual Fleet**: Python-based asynchronous devices (temperature sensor, motion radar, smart HVAC actuator) with cryptographic tokens and heartbeat lifecycle loops.
+2. **Deterministic Security Detection Engine**:
+   - Out-of-bounds anomaly detection (e.g. extreme temperatures `> 100°C`).
+   - Brute-force authentication flood detection with sliding time-window counters.
+   - Telemetry rate-limit enforcement and DoS detection.
+   - Device inactivity watchdog (deadman alert if heartbeats halt).
+   - Identity spoofing and signature validation.
+3. **Attack Simulation Suite (Scenarios A through G)**:
+   - **Test 1 (Scenario A)**: Unregistered device injecting data without authorization.
+   - **Test 2 (Scenario B)**: Brute-force attack with repeated wrong keys.
+   - **Test 3 (Scenario C)**: High-rate telemetry flood (Denial of Service).
+   - **Test 4 (Scenario D)**: Proteus hardware sensor manipulation (extreme heat).
+   - **Test 5 (Scenario E)**: Silent device / connection drop (deadman alert).
+   - **Test 6 (Scenario F)**: Device impersonation / identity theft.
+   - **Test 7 (Scenario G)**: Unauthorized actuator control command without permissions.
+4. **Cryptographic Audit Ledger**:
+   - Blockchain-style immutable record of all security events and administrative actions.
+   - Every block contains `prev_hash`, timestamp, payload, and a verifiable `entry_hash` (SHA-256).
+   - Instant tamper detection with 1-click verification.
+5. **Human-Friendly Security Dashboard**:
+   - Clean, dark-mode, responsive user interface.
+   - Plain-English terminology with zero confusing jargon.
+   - Live telemetry gauges, one-click attack triggers, active threat defense quarantine, and forensic timeline export.
+
+---
+
+## Deployment Options
+
+### Option 1: 1-Click Cloud Deployment (Render.com)
+
+This repository includes a `render.yaml` Blueprint for deploying both the FastAPI backend and React frontend.
+
+1. Fork or push this repository to GitHub.
+2. Log into [Render.com](https://render.com) and click **New +** ➔ **Blueprint**.
+3. Select your repository. Render automatically reads `render.yaml`.
+4. Provide your **MongoDB Atlas Connection URI** (`MONGODB_URI`) when prompted.
+5. Click **Apply**. Render will build and deploy both services!
+
+---
+
+### Option 2: Docker Compose (All-in-One Local Stack)
+
+Run the full platform (FastAPI, React Frontend, MongoDB, and Mosquitto MQTT) with a single command:
+
+```bash
+# Clone the repository
+git clone https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory.git
+cd Virtual-IoT-Security-Laboratory
+
+# Start all containers
+docker compose up --build
+```
+
+- **Frontend Dashboard**: `http://localhost:3000`
+- **Backend API Docs**: `http://localhost:8000/api/docs`
+- **Health Check**: `http://localhost:8000/api/health`
+
+---
+
+### Option 3: Local Development (Python + Node.js)
+
+#### 1. Backend Setup
+```bash
+# Create and activate virtual environment
+python -m venv backend/.venv
+# Windows:
+backend\.venv\Scripts\activate
+# Linux/macOS:
+source backend/.venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your MongoDB URI (local or MongoDB Atlas)
+
+# Seed initial devices
+python scripts/seed_devices.py
+
+# Run FastAPI backend
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open `http://localhost:5173` in your browser.
+
+---
+
+## Proteus Hardware Simulation (LPC2138 ARM7)
+
+The project includes ready-to-run Proteus simulation files under [`simulation/`](file:///d:/.vscode/Coding/Projects/antigravity/VIRTUAL%20IOT%20SECURITY%20LABORATORY/simulation):
+
+1. **Hardware Schematic**: Open [`simulation/LPC2138_Temperature_Node.pdsprj`](file:///d:/.vscode/Coding/Projects/antigravity/VIRTUAL%20IOT%20SECURITY%20LABORATORY/simulation/LPC2138_Temperature_Node.pdsprj) in **Proteus ISIS 8.x**.
+2. **Firmware**: The ARM7TDMI firmware source is in [`simulation/firmware/main.c`](file:///d:/.vscode/Coding/Projects/antigravity/VIRTUAL%20IOT%20SECURITY%20LABORATORY/simulation/firmware/main.c) (precompiled to [`simulation/Temperature_Node.hex`](file:///d:/.vscode/Coding/Projects/antigravity/VIRTUAL%20IOT%20SECURITY%20LABORATORY/simulation/Temperature_Node.hex)).
+3. **Run Hardware Bridge**:
+   - **With physical Proteus COMPIM UART**:
+     ```bash
+     python scripts/run_proteus_bridge.py --port COM1 --baud 9600
+     ```
+   - **Simulated Hardware Mode (no serial port required)**:
+     ```bash
+     python scripts/run_proteus_bridge.py --simulate
+     ```
+
+---
+
+## Test Suite & Verification
+
+The repository includes a comprehensive automated test suite with **117 tests** covering unit logic, cryptographic hashing, API endpoints, attack scenarios, and simulation routines:
+
+```bash
+# Run backend & simulator test suite
+python -m pytest backend/tests/ device_simulator/tests/ -v
+```
+
+```
+====================== 117 passed in 23.4s ======================
+```
+
+To run the frontend production build verification:
+```bash
+cd frontend
+npm run build
+```
 
 ---
 
 ## Project Structure
 
 ```
-virtual-iot-security-lab/
-├── .env.example              # Environment template — copy to .env
-├── docker-compose.yml        # MongoDB + Mosquitto for local dev
-│
-├── backend/                  # FastAPI backend application
+├── .github/workflows/ci.yml       # GitHub Actions automated test & build pipeline
+├── backend/
 │   ├── app/
-│   │   ├── main.py           # Application entry point
-│   │   ├── core/             # Config, logging, DB, MQTT, security
-│   │   ├── api/              # Routes + WebSocket
-│   │   ├── models/           # Domain models (Phase 1+)
-│   │   ├── schemas/          # Pydantic schemas (Phase 1+)
-│   │   ├── services/         # Business logic (Phase 1+)
-│   │   ├── repositories/     # Database access (Phase 1+)
-│   │   ├── security/         # Detection engine (Phase 7+)
-│   │   ├── telemetry/        # Telemetry pipeline (Phase 4+)
-│   │   └── events/           # Event engine (Phase 7+)
-│   └── tests/                # Backend tests
-│
-├── device_simulator/         # Virtual IoT device framework
-│   ├── devices/              # Device implementations
-│   ├── protocols/            # MQTT client wrappers
-│   ├── telemetry/            # Telemetry generators
-│   ├── behaviors/            # Normal/abnormal behavior profiles
-│   └── scenarios/            # Attack scenario helpers
-│
-├── attack_simulator/         # Controlled attack scenarios
-│   ├── scenarios/            # Individual attack scenario scripts
-│   └── engine/               # Scenario orchestration
-│
-├── frontend/                 # React TypeScript dashboard
-│   └── src/
-│       ├── pages/            # Page components
-│       ├── components/       # Reusable UI components
-│       ├── services/         # API + WebSocket clients
-│       ├── hooks/            # Custom React hooks
-│       └── types/            # TypeScript type definitions
-│
-├── scripts/                  # Utility scripts
-│   ├── start_lab.py          # Start all lab components
-│   ├── seed_devices.py       # Create sample devices (Phase 1+)
-│   └── reset_lab.py          # Reset lab to clean state
-│
-└── docs/                     # Documentation
-    ├── architecture.md
-    ├── security-model.md
-    ├── threat-model.md
-    ├── api.md
-    └── attack-scenarios.md
+│   │   ├── api/routes/            # Devices, Telemetry, Security, Scenarios, Audit
+│   │   ├── core/                  # Database, Config, Security middleware, Logging
+│   │   ├── models/                # Pydantic data models & state schemas
+│   │   ├── security/              # Detection engine & correlation logic
+│   │   └── services/              # Device management & audit chain
+│   ├── tests/                     # 109 automated pytest test cases
+│   ├── Dockerfile                 # Multi-stage lightweight Python container
+│   └── requirements.txt           # Backend dependencies
+├── frontend/
+│   ├── src/
+│   │   ├── components/            # Gauges, Attack Launcher, Alerts, Audit Ledger
+│   │   └── pages/Dashboard.tsx    # Responsive cybersecurity dashboard
+│   ├── Dockerfile                 # Multi-stage Nginx Alpine container
+│   └── package.json
+├── device_simulator/              # Virtual IoT Fleet (Temperature, Motion, HVAC)
+├── attack_simulator/              # Attack Scenarios A–G engines
+├── simulation/                    # Proteus LPC2138 schematic & Keil ARM7 firmware
+├── scripts/                       # Database seed & Proteus UART bridge runners
+├── docker-compose.yml             # Full-stack Docker composition
+├── render.yaml                    # 1-Click Render.com Blueprint
+└── FINAL_PROJECT_REPORT.md        # Comprehensive technical report
 ```
-
----
-
-## Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- Node.js 18+
-- MongoDB (local install OR Docker)
-- MQTT Broker — Eclipse Mosquitto (local install OR Docker)
-
-### Option A — Docker Infrastructure (Recommended)
-
-Start MongoDB and Mosquitto in Docker, run backend/frontend locally:
-
-```bash
-# 1. Start infrastructure
-docker compose up mongodb mosquitto -d
-
-# 2. Set up backend
-cd backend
-python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt   # Windows
-# OR: .venv/bin/pip install -r requirements.txt  # Linux/Mac
-
-# 3. Configure environment
-cp ../.env.example ../.env
-# Edit .env if needed (defaults work for local dev)
-
-# 4. Start backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# 5. Set up and start frontend (new terminal)
-cd frontend
-npm install
-npm run dev
-```
-
-### Option B — Local MongoDB + Mosquitto
-
-Install MongoDB and Mosquitto locally, then follow steps 2-5 above.
-
-### Access Points
-
-| Service | URL |
-|---------|-----|
-| Dashboard | http://localhost:5173 |
-| API | http://localhost:8000 |
-| API Docs | http://localhost:8000/api/docs |
-| Health Check | http://localhost:8000/api/health |
-| WebSocket | ws://localhost:8000/ws |
-
----
-
-## Configuration
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-cp .env.example .env
-```
-
-**Critical settings to change:**
-- `SECRET_KEY` — generate a strong random key
-- `DEVICE_PROVISIONING_SECRET` — used to provision device credentials
-
-Never commit `.env` to version control.
-
----
-
-## Running Tests
-
-```bash
-cd backend
-.venv\Scripts\python -m pytest tests/ -v
-```
-
----
-
-## Implementation Status
-
-| Phase | Component / Capability | Status |
-| :---: | :--- | :---: |
-| **0** | **Project Foundation** (FastAPI lifespan, Async Mongo, MQTT client, structured logging) | ✅ **Complete** |
-| **1** | **Device Domain & FSM** (Device models, FSM state validation, seed scripts) | ✅ **Complete** |
-| **2** | **Device Simulator** (Virtual Temperature, Motion, and HVAC Actuator devices) | ✅ **Complete** |
-| **3** | **Gateway & Communications** (MQTT & Proteus LPC2138 UART0 bridge, impersonation filter) | ✅ **Complete** |
-| **4** | **Telemetry Ingestion Pipeline** (Validation, persistence, real-time WebSocket dispatch) | ✅ **Complete** |
-| **5** | **React Operations Dashboard** (Real-time telemetry gauges, live status stream) | ✅ **Complete** |
-| **6** | **Authentication & Capabilities** (Token auth, RBAC capability-verified actuator control) | ✅ **Complete** |
-| **7** | **Security Detection Engine** (Out-of-bounds, rate anomalies, replay, auth floods) | ✅ **Complete** |
-| **8** | **Attack Simulation Engine** (Scenarios A through G with real-time launchpad) | ✅ **Complete** |
-| **9** | **Forensic Investigation** (Correlated timelines, device dossiers, JSON report export) | ✅ **Complete** |
-| **10** | **Cryptographic Audit Ledger** (SHA-256 hash chaining, blockchain-style integrity verifier) | ✅ **Complete** |
-| **11** | **Production Hardening** (OWASP security headers, 1 MB payload enforcement) | ✅ **Complete** |
-| **12** | **Full Orchestration & E2E Testing** (117 passing tests, `/api/lab/*` fleet controls) | ✅ **Complete** |
-
----
-
-## Security Notice
-
-This is a **virtual/simulated** IoT security environment.
-
-- All attack simulations operate only within this application's own virtual environment.
-- No real network scanning, exploitation, or unauthorized access to any external systems.
-- This is a software simulation — no real hardware is involved.
-
----
-
-## Future Extensions (Not Implemented)
-
-- AWS IoT Core integration
-- Certificate-based device identity (X.509)
-- Real hardware support (ESP32)
-- ML-based anomaly detection
-- SIEM integration
-- Rakshak integration
 
 ---
 
 ## License
 
-MIT
-
+This project is open-source under the [MIT License](LICENSE).

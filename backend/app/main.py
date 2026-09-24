@@ -108,10 +108,10 @@ app.add_middleware(
 app.add_middleware(SecurityHeadersMiddleware)
 
 # Trusted hosts — lock down in production only
-if settings.APP_ENV == "production":
+if settings.APP_ENV == "production" and settings.ALLOWED_HOSTS:
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1"],
+        allowed_hosts=settings.ALLOWED_HOSTS,
     )
 
 # ============================================================

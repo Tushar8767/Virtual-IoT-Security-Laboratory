@@ -38,6 +38,7 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]
+    ALLOWED_HOSTS: Union[List[str], str] = ["*"]
 
     # --- MongoDB ---
     MONGODB_URI: str = "mongodb://localhost:27017"
@@ -87,6 +88,13 @@ class Settings(BaseSettings):
     def parse_cors_origins(cls, v):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
+
+    @field_validator("ALLOWED_HOSTS", mode="after")
+    @classmethod
+    def parse_allowed_hosts(cls, v):
+        if isinstance(v, str):
+            return [h.strip() for h in v.split(",") if h.strip()]
         return v
 
     @field_validator("SECRET_KEY", mode="after")
