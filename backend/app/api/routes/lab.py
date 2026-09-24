@@ -78,9 +78,8 @@ async def start_lab_simulation(
     _active_simulator = SimulatorManager()
 
     for d in devices:
-        if d.get("device_id") == "LPC2138-TEMP-001":
-            continue
         _active_simulator.create_device_from_dict(d, on_telemetry_emit=ingest_callback)
+
 
     await _active_simulator.start_all()
 

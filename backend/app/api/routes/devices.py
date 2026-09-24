@@ -100,12 +100,23 @@ async def list_devices(
     Use the `status` query parameter to filter by lifecycle state.
     Use the `device_type` parameter to filter by device type.
     """
-    return await svc.list_devices(
+    res = await svc.list_devices(
         status=status_filter,
         device_type=device_type,
         page=page,
         page_size=page_size,
     )
+    if res.total == 0 and status_filter is None and device_type is None:
+        from app.core.database import _auto_seed_default_devices
+        await _auto_seed_default_devices()
+        res = await svc.list_devices(
+            status=status_filter,
+            device_type=device_type,
+            page=page,
+            page_size=page_size,
+        )
+    return res
+
 
 
 @router.post(
