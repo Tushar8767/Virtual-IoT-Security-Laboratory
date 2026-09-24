@@ -1,0 +1,135 @@
+/* ============================================================
+   Virtual IoT Security Laboratory — Global Styles
+   Phase 0: Foundation layout and CSS variables
+   ============================================================ */
+
+:root {
+  /* Color palette — dark security theme */
+  --color-bg-primary: #0d1117;
+  --color-bg-secondary: #161b22;
+  --color-bg-card: #1c2128;
+  --color-bg-hover: #21262d;
+
+  --color-border: #30363d;
+  --color-border-subtle: #21262d;
+
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #6e7681;
+
+  --color-accent-blue: #2f81f7;
+  --color-accent-green: #3fb950;
+  --color-accent-yellow: #d29922;
+  --color-accent-orange: #d18616;
+  --color-accent-red: #f85149;
+  --color-accent-purple: #a371f7;
+  --color-accent-teal: #39c5cf;
+
+  /* Severity colors */
+  --color-severity-low: #3fb950;
+  --color-severity-medium: #d29922;
+  --color-severity-high: #f0883e;
+  --color-severity-critical: #f85149;
+
+  /* Device status colors */
+  --color-status-online: #3fb950;
+  --color-status-offline: #8b949e;
+  --color-status-suspended: #d29922;
+  --color-status-revoked: #f85149;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --border-radius: 6px;
+  --border-radius-lg: 12px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Links */
+a {
+  color: var(--color-accent-blue);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+/* Code */
+code, pre {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Utility classes */
+.text-muted { color: var(--color-text-muted); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-mono { font-family: var(--font-family-mono); }
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.online { background-color: var(--color-status-online); }
+.status-dot.offline { background-color: var(--color-status-offline); }
+.status-dot.suspended { background-color: var(--color-status-suspended); }
+.status-dot.revoked { background-color: var(--color-status-revoked); }
+
+.severity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.severity-badge.low { background: rgba(63, 185, 80, 0.15); color: var(--color-severity-low); }
+.severity-badge.medium { background: rgba(210, 153, 34, 0.15); color: var(--color-severity-medium); }
+.severity-badge.high { background: rgba(240, 136, 62, 0.15); color: var(--color-severity-high); }
+.severity-badge.critical { background: rgba(248, 81, 73, 0.15); color: var(--color-severity-critical); }
