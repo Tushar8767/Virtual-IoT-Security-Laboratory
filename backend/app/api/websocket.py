@@ -77,7 +77,7 @@ class ConnectionManager:
 
         # Broadcast to all connected clients
         disconnected = set()
-        message = json.dumps(event)
+        message = json.dumps(event, default=str)
 
         for connection in self._connections:
             try:

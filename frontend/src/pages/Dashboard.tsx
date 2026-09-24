@@ -43,7 +43,7 @@ export const DashboardPage: React.FC = () => {
         const map: Record<string, any> = {};
         (telemData.records || telemData.telemetry || telemData || []).forEach((item: any) => {
           if (item.device_id) {
-            map[item.device_id] = item;
+            map[item.device_id] = item.values || item.data || item;
           }
         });
         setTelemetryMap((prev) => ({ ...map, ...prev }));
@@ -75,9 +75,10 @@ export const DashboardPage: React.FC = () => {
 
       if (evt.event_type === 'telemetry_received' && evt.device_id) {
         const dId = String(evt.device_id);
+        const telemValues = (evt as any).values || evt.data || evt;
         setTelemetryMap((prev) => ({
           ...prev,
-          [dId]: evt.data || evt,
+          [dId]: telemValues,
         }));
       }
 

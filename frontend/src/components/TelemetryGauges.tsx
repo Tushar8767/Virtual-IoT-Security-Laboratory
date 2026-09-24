@@ -29,28 +29,41 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
         gap: '16px',
       }}>
         {devices.map((device) => {
-          const telem = telemetryMap[device.device_id]?.data || telemetryMap[device.device_id] || {};
+          const raw = telemetryMap[device.device_id] || {};
+          const telem = raw.values || raw.data || raw;
           const isTemp = device.device_type === 'temperature_sensor' || device.device_id.includes('TEMP');
           const isMotion = device.device_type === 'motion_sensor' || device.device_id.includes('MOTION');
           const isActuator = device.device_type === 'smart_actuator' || device.device_id.includes('ACTUATOR');
 
           // Temperature values
-          const tempC = telem.temperature_c !== undefined ? Number(telem.temperature_c) : null;
-          const tempF = telem.temperature_f !== undefined ? Number(telem.temperature_f) : (tempC !== null ? (tempC * 9/5 + 32).toFixed(1) : null);
+          const tempC = telem.temperature_c !== undefined 
+            ? Number(telem.temperature_c) 
+            : (raw.temperature_c !== undefined ? Number(raw.temperature_c) : null);
+          const tempF = telem.temperature_f !== undefined 
+            ? Number(telem.temperature_f) 
+            : (tempC !== null ? (tempC * 9/5 + 32).toFixed(1) : null);
           const isOverheat = tempC !== null && tempC > 35;
           const isCold = tempC !== null && tempC < 16;
 
           // Motion values
-          const motionDetected = telem.motion_detected === true;
-          const ambientLight = telem.ambient_light_lux !== undefined ? telem.ambient_light_lux : null;
-          const triggerCount = telem.total_trigger_count !== undefined ? telem.total_trigger_count : null;
+          const motionDetected = telem.motion_detected === true || raw.motion_detected === true;
+          const ambientLight = telem.ambient_light_lux !== undefined 
+            ? telem.ambient_light_lux 
+            : (raw.ambient_light_lux !== undefined ? raw.ambient_light_lux : null);
+          const triggerCount = telem.total_trigger_count !== undefined 
+            ? telem.total_trigger_count 
+            : (raw.total_trigger_count !== undefined ? raw.total_trigger_count : null);
 
           // Actuator values
-          const actuatorState = telem.actuator_state || 'IDLE';
-          const powerWatts = telem.power_consumption_watts !== undefined ? telem.power_consumption_watts : null;
-          const setpointC = telem.target_setpoint_c !== undefined ? telem.target_setpoint_c : 22.0;
+          const actuatorState = telem.actuator_state || raw.actuator_state || 'IDLE';
+          const powerWatts = telem.power_consumption_watts !== undefined 
+            ? telem.power_consumption_watts 
+            : (raw.power_consumption_watts !== undefined ? raw.power_consumption_watts : null);
+          const setpointC = telem.target_setpoint_c !== undefined 
+            ? telem.target_setpoint_c 
+            : (raw.target_setpoint_c !== undefined ? raw.target_setpoint_c : 22.0);
 
-          const hasData = Object.keys(telem).length > 0;
+          const hasData = tempC !== null || motionDetected || ambientLight !== null || telem.actuator_state !== undefined || raw.actuator_state !== undefined;
 
           return (
             <div
