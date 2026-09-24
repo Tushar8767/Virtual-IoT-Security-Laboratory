@@ -27,7 +27,14 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
         const res = await fetch(`${API_BASE}/api/telemetry/device/${device.device_id}?limit=15`);
         if (res.ok) {
           const data = await res.json();
-          setHistory(data.items || data || []);
+          const items = Array.isArray(data)
+            ? data
+            : Array.isArray(data.telemetry)
+            ? data.telemetry
+            : Array.isArray(data.items)
+            ? data.items
+            : [];
+          setHistory(items);
         }
       } catch (err) {
         console.error('Failed to load history', err);
@@ -177,7 +184,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                 <div style={{ textAlign: 'center', padding: '30px', color: 'var(--color-text-secondary)' }}>
                   Loading telemetry logs...
                 </div>
-              ) : history.length === 0 ? (
+              ) : !Array.isArray(history) || history.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '30px', color: 'var(--color-text-muted)' }}>
                   No telemetry recorded yet. Start the fleet simulation to populate data.
                 </div>
