@@ -72,3 +72,4 @@ async def handle_device_event_message(device_id: str, payload: bytes) -> None:
             device_id=device_id,
             error=str(e),
         )
+

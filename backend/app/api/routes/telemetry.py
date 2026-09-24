@@ -10,3 +10,4 @@ router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
 @router.get("/", summary="List telemetry [Phase 4]")
 async def list_telemetry():
     return {"telemetry": [], "message": "Telemetry pipeline implemented in Phase 4"}
+

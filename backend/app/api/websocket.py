@@ -171,3 +171,4 @@ async def broadcast_event(event_type: str, data: dict) -> None:
         **data,
     }
     await manager.broadcast(event)
+

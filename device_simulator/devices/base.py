@@ -82,3 +82,4 @@ class VirtualDevice(abc.ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} id={self.device_id} type={self.device_type}>"
+

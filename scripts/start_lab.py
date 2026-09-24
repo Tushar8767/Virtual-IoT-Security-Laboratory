@@ -77,3 +77,4 @@ if __name__ == "__main__":
         print("\nStopping lab...")
         backend_proc.terminate()
         print("Lab stopped.")
+

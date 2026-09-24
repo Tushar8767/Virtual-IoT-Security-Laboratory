@@ -52,3 +52,4 @@ async def stop_lab():
 @router.post("/reset", summary="Reset the lab [Phase 2]")
 async def reset_lab():
     return {"status": "accepted", "message": "Lab reset implemented in Phase 2"}
+

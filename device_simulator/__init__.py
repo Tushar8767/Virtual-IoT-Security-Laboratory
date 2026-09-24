@@ -7,3 +7,4 @@ simulated IoT devices without requiring physical hardware.
 Phase 0: Package structure only.
 Phase 2: Full device simulation implementation.
 """
+

@@ -232,3 +232,4 @@ async def publish_command(device_id: str, payload: dict) -> bool:
     except Exception as e:
         logger.error("mqtt_publish_failed", device_id=device_id, error=str(e))
         return False
+

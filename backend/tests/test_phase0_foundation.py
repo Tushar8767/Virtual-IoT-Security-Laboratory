@@ -21,12 +21,29 @@ from httpx import AsyncClient, ASGITransport
 @pytest.fixture
 def mock_db_connected():
     """Mock database as connected."""
-    with patch(
-        "app.core.database.get_database_status",
-        new_callable=AsyncMock,
-        return_value={"connected": True, "database": "iot_security_lab", "ping": True},
+    mock_db = MagicMock()
+    mock_cursor = MagicMock()
+    mock_cursor.sort.return_value = mock_cursor
+    mock_cursor.skip.return_value = mock_cursor
+    mock_cursor.limit.return_value = mock_cursor
+    mock_cursor.to_list = AsyncMock(return_value=[])
+
+    mock_collection = MagicMock()
+    mock_collection.count_documents = AsyncMock(return_value=0)
+    mock_collection.find.return_value = mock_cursor
+
+    mock_db.__getitem__.return_value = mock_collection
+    mock_db.devices = mock_collection
+    mock_db.audit_logs = mock_collection
+    with (
+        patch(
+            "app.core.database.get_database_status",
+            new_callable=AsyncMock,
+            return_value={"connected": True, "database": "iot_security_lab", "ping": True},
+        ),
+        patch("app.core.database.get_database", return_value=mock_db),
     ):
-        yield
+        yield mock_db
 
 
 @pytest.fixture
@@ -266,3 +283,4 @@ class TestSecurityUtilities:
         plain, hashed = generate_device_credential_pair()
         assert plain.startswith("iot-")
         assert verify_credential(plain, hashed) is True
+

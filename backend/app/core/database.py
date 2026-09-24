@@ -167,3 +167,4 @@ async def _create_indexes() -> None:
     )
 
     logger.info("database_indexes_created")
+

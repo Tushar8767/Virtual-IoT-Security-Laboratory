@@ -15,3 +15,4 @@ async def list_security_events():
 @router.get("/alerts", summary="List alerts [Phase 7]")
 async def list_alerts():
     return {"alerts": [], "message": "Alert system implemented in Phase 7"}
+

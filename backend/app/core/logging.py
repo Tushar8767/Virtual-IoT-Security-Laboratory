@@ -44,7 +44,7 @@ def configure_logging() -> None:
             getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO)
         ),
         context_class=dict,
-        logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+        logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
 
@@ -59,3 +59,4 @@ def configure_logging() -> None:
     logging.getLogger("motor").setLevel(logging.WARNING)
     logging.getLogger("pymongo").setLevel(logging.WARNING)
     logging.getLogger("paho").setLevel(logging.WARNING)
+
