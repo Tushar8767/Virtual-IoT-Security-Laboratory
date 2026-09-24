@@ -155,7 +155,7 @@ async def health_check():
     db_status = await get_database_status()
     mqtt_status = get_mqtt_status()
 
-    overall = "healthy" if db_status["connected"] and mqtt_status["connected"] else "degraded"
+    overall = "healthy" if db_status["connected"] else "degraded"
 
     return {
         "status": overall,
