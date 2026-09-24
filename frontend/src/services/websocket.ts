@@ -5,7 +5,7 @@
  * Full integration in Phase 5.
  */
 
-const WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8000/ws';
+import { WS_URL } from '../config';
 
 type EventHandler = (event: LabEvent) => void;
 

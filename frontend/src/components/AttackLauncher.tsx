@@ -13,8 +13,7 @@ export interface AttackScenario {
 interface AttackLauncherProps {
   onAttackLaunched?: () => void;
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 const FRIENDLY_NAMES: Record<string, { title: string; category: string; description: string; expected: string }> = {
   SCENARIO_A: {

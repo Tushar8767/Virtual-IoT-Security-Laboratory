@@ -4,8 +4,7 @@ import { DeviceItem } from './DeviceList';
 interface ForensicTimelineProps {
   devices: DeviceItem[];
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) => {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(devices[0]?.device_id || 'PY-TEMP-001');

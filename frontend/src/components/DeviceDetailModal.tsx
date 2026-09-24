@@ -6,8 +6,7 @@ interface DeviceDetailModalProps {
   onClose: () => void;
   onAction: (deviceId: string, action: 'suspend' | 'reinstate' | 'revoke') => void;
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
   device,

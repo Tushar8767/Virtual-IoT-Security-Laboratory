@@ -132,9 +132,9 @@ app.include_router(investigation.router, prefix="/api")
 # ============================================================
 # Health / Root
 # ============================================================
-@app.get("/", tags=["Health"])
-async def root():
-    """Root endpoint — API information."""
+@app.get("/api/info", tags=["Health"])
+async def api_info():
+    """API information endpoint."""
     return {
         "name": settings.APP_NAME,
         "version": settings.APP_VERSION,
@@ -167,3 +167,39 @@ async def health_check():
             "mqtt": mqtt_status,
         },
     }
+
+
+# ============================================================
+# Static Frontend Serving (All-in-One Deployment Mode)
+# ============================================================
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi import HTTPException
+
+_FRONTEND_CANDIDATES = [
+    Path("/app/frontend_dist"),  # Inside Docker container
+    _ROOT / "frontend" / "dist",  # Local build
+]
+
+_frontend_dist = None
+for _cand in _FRONTEND_CANDIDATES:
+    if _cand.exists() and (_cand / "index.html").exists():
+        _frontend_dist = _cand
+        break
+
+if _frontend_dist:
+    if (_frontend_dist / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(_frontend_dist / "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_frontend(full_path: str):
+        if full_path.startswith("api") or full_path.startswith("ws"):
+            raise HTTPException(status_code=404, detail="Not Found")
+        target_file = _frontend_dist / full_path
+        if full_path and target_file.is_file():
+            return FileResponse(target_file)
+        return FileResponse(_frontend_dist / "index.html")
+else:
+    @app.get("/", tags=["Health"])
+    async def root():
+        return await api_info()

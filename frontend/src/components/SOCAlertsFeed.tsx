@@ -16,8 +16,7 @@ interface SOCAlertsFeedProps {
   onQuarantineDevice: (deviceId: string) => void;
   refreshTrigger?: number;
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
   onQuarantineDevice,

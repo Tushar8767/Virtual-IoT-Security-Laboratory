@@ -5,7 +5,7 @@
  * Full implementation in Phase 5.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE as API_BASE_URL } from '../config';
 
 async function request<T>(
   path: string,

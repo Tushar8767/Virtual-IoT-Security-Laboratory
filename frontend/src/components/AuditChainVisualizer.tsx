@@ -11,8 +11,7 @@ export interface AuditRecord {
   prev_hash: string;
   metadata?: Record<string, any>;
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 export const AuditChainVisualizer: React.FC = () => {
   const [logs, setLogs] = useState<AuditRecord[]>([]);

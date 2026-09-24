@@ -9,8 +9,7 @@ import { AuditChainVisualizer } from '../components/AuditChainVisualizer';
 import { ForensicTimeline } from '../components/ForensicTimeline';
 import { Navbar } from '../components/Navbar';
 import { wsService } from '../services/websocket';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+import { API_BASE } from '../config';
 
 export const DashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'operations' | 'attacks' | 'soc' | 'audit' | 'forensics'>('operations');
