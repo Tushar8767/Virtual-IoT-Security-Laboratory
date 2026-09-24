@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 Proteus LPC2138 UART Bridge Runner
 
 Connects the Proteus VSM LPC2138 + LM35 simulation to the Virtual IoT Security Laboratory.
@@ -36,12 +36,12 @@ API_KEY = "dev-secret-lpc2138"
 def send_to_api(payload: dict):
     try:
         res = httpx.post(API_URL, json=payload, timeout=3.0)
-        if res.status_code == 200:
-            print(f"[BRIDGE -> API] Ingested packet #{payload.get('sequence_number')} | Temp: {payload.get('values', {}).get('temperature_c')}°C")
+        if res.status_code in (200, 201):
+            print(f"[BRIDGE -> API] ✅ Ingested packet #{payload.get('sequence_number')} | Temp: {payload.get('values', {}).get('temperature_c')}°C")
         else:
-            print(f"[BRIDGE -> API] Rejected ({res.status_code}): {res.text}")
+            print(f"[BRIDGE -> API] ❌ Rejected ({res.status_code}): {res.text}")
     except Exception as e:
-        print(f"[BRIDGE -> API] Failed to forward telemetry: {e}")
+        print(f"[BRIDGE -> API] ⚠️ Failed to forward telemetry: {e}")
 
 
 def run_simulated():
@@ -61,19 +61,22 @@ def run_simulated():
     seq = 1
     base_temp = 25.0
 
-    while True:
-        # Generate realistic ADC & Temperature reading matching LPC2138 main.c
-        fluctuation = random.uniform(-1.0, 1.2)
-        temp = round(base_temp + fluctuation, 1)
-        adc_val = int((temp * 1023) / 330)
+    try:
+        while True:
+            # Generate realistic ADC & Temperature reading matching LPC2138 main.c
+            fluctuation = random.uniform(-1.0, 1.2)
+            temp = round(base_temp + fluctuation, 1)
+            adc_val = int((temp * 1023) / 330)
 
-        # Emitted line exactly matching simulation/main.c
-        raw_line = f"TELEMETRY;DEVICE_ID={DEVICE_ID};TYPE=TEMPERATURE_SENSOR;SEQ={seq};ADC={adc_val};TEMP={temp}\r\n"
-        print(f"[PROTEUS UART0 RAW] >> {raw_line.strip()}")
+            # Emitted line exactly matching simulation/main.c
+            raw_line = f"TELEMETRY;DEVICE_ID={DEVICE_ID};TYPE=TEMPERATURE_SENSOR;SEQ={seq};ADC={adc_val};TEMP={temp}\r\n"
+            print(f"[PROTEUS UART0 RAW] >> {raw_line.strip()}")
 
-        bridge.parse_raw_line(raw_line)
-        seq += 1
-        time.sleep(3.0)
+            bridge.parse_raw_line(raw_line)
+            seq += 1
+            time.sleep(3.0)
+    except KeyboardInterrupt:
+        print("\n[BRIDGE] Stopped cleanly.")
 
 
 def run_serial(port: str, baud: int):
