@@ -8,7 +8,6 @@ export interface AttackScenario {
   target_device: string;
   expected_detection: string;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  mitre?: string;
 }
 
 interface AttackLauncherProps {
@@ -17,14 +16,49 @@ interface AttackLauncherProps {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
-const MITRE_MAP: Record<string, string> = {
-  SCENARIO_A: 'MITRE T0814 // Rogue Master/Node Injection',
-  SCENARIO_B: 'MITRE T0812 // Credential Brute-Force',
-  SCENARIO_C: 'MITRE T0814 // High-Frequency Telemetry DoS',
-  SCENARIO_D: 'MITRE T0855 // Unauthorized Sensor Tampering',
-  SCENARIO_E: 'MITRE T0885 // Loss of View / Heartbeat Starvation',
-  SCENARIO_F: 'MITRE T0857 // Device Identity Impersonation',
-  SCENARIO_G: 'MITRE T0855 // Unauthorized Actuation Attempt',
+const FRIENDLY_NAMES: Record<string, { title: string; category: string; description: string; expected: string }> = {
+  SCENARIO_A: {
+    title: 'Test 1: Unregistered Device Attack',
+    category: 'Fake Device Test',
+    description: 'An unknown rogue device (ROGUE-999) tries to connect and send data without registration.',
+    expected: 'System blocks the unknown device',
+  },
+  SCENARIO_B: {
+    title: 'Test 2: Repeated Wrong Passwords',
+    category: 'Password Guessing Test',
+    description: 'Rapidly sends invalid passwords to test if the system detects repeated login failures.',
+    expected: 'System detects failed login flood',
+  },
+  SCENARIO_C: {
+    title: 'Test 3: Network Traffic Overload (DoS)',
+    category: 'Traffic Flood Test',
+    description: 'Sends a large burst of data packets per second to test if the system catches rate limit violations.',
+    expected: 'System detects excessive data rate',
+  },
+  SCENARIO_D: {
+    title: 'Test 4: Extreme High Temperature (105°C)',
+    category: 'Dangerous Reading Test',
+    description: 'Injects a fake 105°C temperature reading to test if the high-temperature alert triggers immediately.',
+    expected: 'System triggers critical high-temperature alert',
+  },
+  SCENARIO_E: {
+    title: 'Test 5: Device Goes Silent (Offline)',
+    category: 'Connection Loss Test',
+    description: 'A device abruptly stops sending check-in pings to verify the system notices missing devices.',
+    expected: 'System alerts on missed check-in timeout',
+  },
+  SCENARIO_F: {
+    title: 'Test 6: Identity Theft (Impersonation)',
+    category: 'Identity Test',
+    description: 'A sensor pretends to be another device to inject data or commands under a false identity.',
+    expected: 'System detects device impersonation',
+  },
+  SCENARIO_G: {
+    title: 'Test 7: Unauthorized Control Command',
+    category: 'Permission Test',
+    description: 'A sensor without permission tries to issue an actuator control command.',
+    expected: 'System rejects command due to missing permissions',
+  },
 };
 
 export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched }) => {
@@ -63,7 +97,7 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
         onAttackLaunched();
       }
     } catch (err: any) {
-      setLastResult({ error: err.message || 'Execution failed' });
+      setLastResult({ error: err.message || 'Test execution failed' });
     } finally {
       setRunningId(null);
     }
@@ -72,13 +106,13 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
   const getSeverityBadge = (sev: string) => {
     switch (sev) {
       case 'CRITICAL':
-        return { bg: 'rgba(239, 68, 68, 0.15)', text: '#ef4444', border: 'rgba(239, 68, 68, 0.35)' };
+        return { bg: 'rgba(239, 68, 68, 0.15)', text: '#ef4444', label: 'High Priority' };
       case 'HIGH':
-        return { bg: 'rgba(249, 115, 22, 0.15)', text: '#f97316', border: 'rgba(249, 115, 22, 0.35)' };
+        return { bg: 'rgba(249, 115, 22, 0.15)', text: '#f97316', label: 'Medium-High Priority' };
       case 'MEDIUM':
-        return { bg: 'rgba(245, 158, 11, 0.15)', text: '#f59e0b', border: 'rgba(245, 158, 11, 0.35)' };
+        return { bg: 'rgba(245, 158, 11, 0.15)', text: '#f59e0b', label: 'Medium Priority' };
       default:
-        return { bg: 'rgba(16, 185, 129, 0.15)', text: '#10b981', border: 'rgba(16, 185, 129, 0.35)' };
+        return { bg: 'rgba(16, 185, 129, 0.15)', text: '#10b981', label: 'Low Priority' };
     }
   };
 
@@ -86,47 +120,44 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
     <div style={{ marginBottom: '28px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#ef4444' }}>⚔️</span> Adversarial Attack Simulation Matrix
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+            🧪 Security Tests & Attack Simulations
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-            Controlled cyber warfare tests executing live against Gateway, Authentication & Detection Engines
+          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+            Run controlled security tests to verify that the system detects and blocks unauthorized activity.
           </p>
         </div>
         <span style={{
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          color: 'var(--color-accent-purple)',
-          background: 'rgba(168, 85, 247, 0.12)',
+          fontSize: '12px',
+          color: 'var(--color-accent-blue)',
+          background: 'rgba(56, 189, 248, 0.1)',
           padding: '4px 10px',
           borderRadius: '6px',
-          border: '1px solid rgba(168, 85, 247, 0.25)',
-          fontWeight: 700,
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          fontWeight: 600,
         }}>
-          {scenarios.length} ATTACK VECTORS ARMED
+          {scenarios.length} Tests Ready
         </span>
       </div>
 
-      {/* Execution Feedback Terminal Banner */}
+      {/* Execution Result Banner */}
       {lastResult && (
         <div style={{
-          marginBottom: '22px',
+          marginBottom: '20px',
           background: 'var(--color-bg-card)',
           border: `1px solid ${lastResult.detected ? '#10b981' : '#f97316'}`,
           borderRadius: 'var(--border-radius-lg)',
-          padding: '18px 20px',
-          boxShadow: lastResult.detected ? '0 0 20px rgba(16, 185, 129, 0.2)' : 'none',
+          padding: '16px 20px',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '18px' }}>{lastResult.detected ? '🛡️' : '⚠️'}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px' }}>{lastResult.detected ? '✅' : '⚠️'}</span>
               <span style={{
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '14px',
                 color: lastResult.detected ? '#10b981' : '#f97316',
-                letterSpacing: '0.04em',
               }}>
-                {lastResult.detected ? 'ATTACK INTERCEPTED & MITIGATED BY DETECTION ENGINE' : 'ATTACK SCENARIO EXECUTED'}
+                {lastResult.detected ? 'Security Test Passed: Attack Successfully Detected & Blocked!' : 'Test Completed'}
               </span>
             </div>
             <button
@@ -139,38 +170,40 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
 
           <div style={{
             background: 'var(--color-bg-base)',
-            padding: '12px 14px',
+            padding: '10px 14px',
             borderRadius: '6px',
-            fontFamily: 'monospace',
             fontSize: '12px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '8px',
-            border: '1px solid var(--color-border)',
           }}>
-            <div><span style={{ color: 'var(--color-text-muted)' }}>Vector:</span> <strong style={{ color: '#fff' }}>{lastResult.name || lastResult.scenario_id}</strong></div>
-            {lastResult.run_id && <div><span style={{ color: 'var(--color-text-muted)' }}>Run ID:</span> <strong style={{ color: 'var(--color-accent-blue)' }}>{lastResult.run_id}</strong></div>}
-            {lastResult.detection_rule && <div><span style={{ color: 'var(--color-text-muted)' }}>Rule Triggered:</span> <strong style={{ color: '#06b6d4' }}>{lastResult.detection_rule}</strong></div>}
-            {lastResult.alert_id && <div><span style={{ color: 'var(--color-text-muted)' }}>SOC Alert:</span> <strong style={{ color: '#ef4444' }}>{lastResult.alert_id}</strong></div>}
+            <div><span style={{ color: 'var(--color-text-muted)' }}>Test:</span> <strong>{lastResult.name || lastResult.scenario_id}</strong></div>
+            {lastResult.detection_rule && <div><span style={{ color: 'var(--color-text-muted)' }}>Detection Rule:</span> <strong style={{ color: 'var(--color-accent-blue)' }}>{lastResult.detection_rule}</strong></div>}
+            {lastResult.alert_id && <div><span style={{ color: 'var(--color-text-muted)' }}>Alert ID:</span> <strong style={{ color: '#ef4444' }}>{lastResult.alert_id}</strong></div>}
           </div>
         </div>
       )}
 
-      {/* Scenarios Grid */}
+      {/* Grid of Tests */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-secondary)' }}>
-          Loading threat catalog...
+          Loading tests catalog...
         </div>
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
           gap: '16px',
         }}>
           {scenarios.map((sc) => {
             const sev = getSeverityBadge(sc.severity);
             const isExecuting = runningId === sc.id;
-            const mitre = MITRE_MAP[sc.id] || 'MITRE ATT&CK for IoT';
+            const friendly = FRIENDLY_NAMES[sc.id] || {
+              title: sc.name,
+              category: sc.category,
+              description: sc.description,
+              expected: sc.expected_detection,
+            };
 
             return (
               <div
@@ -183,63 +216,48 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  transition: 'all 0.2s ease',
-                  position: 'relative',
-                  overflow: 'hidden',
                 }}
               >
                 <div>
-                  {/* MITRE Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <span style={{
-                      fontSize: '10px',
-                      fontFamily: 'monospace',
-                      color: 'var(--color-accent-cyan)',
-                      background: 'rgba(6, 182, 212, 0.1)',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      border: '1px solid rgba(6, 182, 212, 0.25)',
-                      fontWeight: 700,
+                      fontSize: '11px',
+                      color: 'var(--color-accent-blue)',
+                      fontWeight: 600,
                     }}>
-                      {mitre}
+                      {friendly.category}
                     </span>
 
                     <span style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
+                      fontSize: '11px',
+                      fontWeight: 600,
                       padding: '2px 8px',
                       borderRadius: '10px',
                       background: sev.bg,
                       color: sev.text,
-                      border: `1px solid ${sev.border}`,
                     }}>
-                      {sc.severity}
+                      {sev.label}
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
-                    {sc.name}
+                  <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                    {friendly.title}
                   </h3>
 
-                  <div style={{ fontSize: '11px', color: 'var(--color-accent-purple)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '10px' }}>
-                    Category: {sc.category}
-                  </div>
-
                   <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.5, marginBottom: '14px' }}>
-                    {sc.description}
+                    {friendly.description}
                   </p>
 
                   <div style={{
                     background: 'var(--color-bg-base)',
                     padding: '8px 10px',
                     borderRadius: '6px',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     color: 'var(--color-text-secondary)',
                     marginBottom: '16px',
-                    border: '1px solid var(--color-border-subtle)',
                   }}>
-                    <div>Target Node: <strong style={{ color: '#fff', fontFamily: 'monospace' }}>{sc.target_device}</strong></div>
-                    <div>Detection Rule: <strong style={{ color: 'var(--color-accent-cyan)', fontFamily: 'monospace' }}>{sc.expected_detection}</strong></div>
+                    <div>Target Device: <strong style={{ color: '#fff' }}>{sc.target_device}</strong></div>
+                    <div>Expected Result: <strong style={{ color: '#10b981' }}>{friendly.expected}</strong></div>
                   </div>
                 </div>
 
@@ -256,17 +274,15 @@ export const AttackLauncher: React.FC<AttackLauncherProps> = ({ onAttackLaunched
                     borderRadius: 'var(--border-radius)',
                     fontWeight: 700,
                     fontSize: '13px',
-                    letterSpacing: '0.03em',
                     cursor: isExecuting ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
-                    boxShadow: isExecuting ? 'none' : '0 2px 10px rgba(239, 68, 68, 0.3)',
-                    transition: 'all 0.15s ease',
+                    gap: '6px',
+                    transition: 'opacity 0.2s',
                   }}
                 >
-                  {isExecuting ? '⏳ INJECTING ATTACK PAYLOAD...' : '⚡ LAUNCH ATTACK'}
+                  {isExecuting ? '⏳ Running Test...' : '▶ Run Test'}
                 </button>
               </div>
             );

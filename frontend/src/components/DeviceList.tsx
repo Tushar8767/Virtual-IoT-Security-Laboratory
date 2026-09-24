@@ -30,12 +30,22 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'ONLINE': return 'Online';
+      case 'PROVISIONED': return 'Ready / New';
+      case 'SUSPENDED': return 'Blocked';
+      case 'REVOKED': return 'Revoked';
+      default: return status;
+    }
+  };
+
   if (loading) {
     return <div style={{ color: 'var(--color-text-secondary)', padding: '20px' }}>Loading devices...</div>;
   }
 
   if (devices.length === 0) {
-    return <div style={{ color: 'var(--color-text-secondary)', padding: '20px' }}>No devices registered. Run seed script.</div>;
+    return <div style={{ color: 'var(--color-text-secondary)', padding: '20px' }}>No devices registered yet.</div>;
   }
 
   return (
@@ -49,9 +59,9 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
         <thead>
           <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}>
             <th style={{ padding: '12px 16px' }}>Device ID</th>
-            <th style={{ padding: '12px 16px' }}>Name / Type</th>
+            <th style={{ padding: '12px 16px' }}>Device Name & Type</th>
             <th style={{ padding: '12px 16px' }}>Status</th>
-            <th style={{ padding: '12px 16px' }}>Capabilities</th>
+            <th style={{ padding: '12px 16px' }}>Features & Roles</th>
             <th style={{ padding: '12px 16px' }}>Last Seen</th>
             <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
           </tr>
@@ -93,7 +103,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
                     borderRadius: '50%',
                     background: getStatusColor(d.status),
                   }} />
-                  {d.status}
+                  {getStatusLabel(d.status)}
                 </span>
               </td>
               <td style={{ padding: '12px 16px' }}>
@@ -107,7 +117,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
                       borderRadius: '4px',
                       color: 'var(--color-text-secondary)',
                     }}>
-                      {c.replace('_', ' ')}
+                      {c.replace(/_/g, ' ')}
                     </span>
                   ))}
                   {d.capabilities.length > 2 && (
@@ -134,7 +144,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
                         fontWeight: 500,
                       }}
                     >
-                      🔍 Inspect
+                      🔍 View Details
                     </button>
                   )}
                   {d.status !== 'SUSPENDED' && d.status !== 'REVOKED' && (
@@ -150,7 +160,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
                         cursor: 'pointer',
                       }}
                     >
-                      Suspend
+                      Block
                     </button>
                   )}
                   {d.status === 'SUSPENDED' && (
@@ -166,7 +176,7 @@ export const DeviceList: React.FC<DeviceListProps> = ({ devices, onAction, onIns
                         cursor: 'pointer',
                       }}
                     >
-                      Reinstate
+                      Unblock
                     </button>
                   )}
                   {d.status !== 'REVOKED' && (

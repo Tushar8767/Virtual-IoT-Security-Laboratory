@@ -24,7 +24,7 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
         setProfile(data);
       }
     } catch (err) {
-      console.error('Failed to load forensic profile', err);
+      console.error('Failed to load profile', err);
     } finally {
       setLoading(false);
     }
@@ -58,20 +58,20 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `forensic_dossier_${mode === 'device' ? selectedDeviceId : correlationIdInput}.json`;
+    a.download = `incident_report_${mode === 'device' ? selectedDeviceId : correlationIdInput}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div style={{ marginBottom: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+    <div style={{ marginBottom: '28px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            🔍 Cyber Forensic Investigation & Incident Timeline
+            🔍 Incident Investigation & History
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-            Reconstruct end-to-end attack chains and correlate security events across telemetry, auth, and audit logs.
+          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+            Look at the complete history of events for any device to understand what happened.
           </p>
         </div>
 
@@ -79,47 +79,47 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
           <button
             onClick={() => setMode('device')}
             style={{
-              padding: '6px 12px',
+              padding: '6px 14px',
               fontSize: '12px',
               borderRadius: 'var(--border-radius)',
               border: mode === 'device' ? '1px solid var(--color-accent-blue)' : '1px solid var(--color-border)',
-              background: mode === 'device' ? 'rgba(47, 129, 247, 0.15)' : 'var(--color-bg-secondary)',
-              color: mode === 'device' ? 'var(--color-accent-blue)' : 'var(--color-text-secondary)',
+              background: mode === 'device' ? 'rgba(56, 189, 248, 0.15)' : 'var(--color-bg-card)',
+              color: mode === 'device' ? '#38bdf8' : 'var(--color-text-secondary)',
               fontWeight: 600,
               cursor: 'pointer',
             }}
           >
-            By Device Dossier
+            By Device
           </button>
           <button
             onClick={() => setMode('correlation')}
             style={{
-              padding: '6px 12px',
+              padding: '6px 14px',
               fontSize: '12px',
               borderRadius: 'var(--border-radius)',
               border: mode === 'correlation' ? '1px solid var(--color-accent-blue)' : '1px solid var(--color-border)',
-              background: mode === 'correlation' ? 'rgba(47, 129, 247, 0.15)' : 'var(--color-bg-secondary)',
-              color: mode === 'correlation' ? 'var(--color-accent-blue)' : 'var(--color-text-secondary)',
+              background: mode === 'correlation' ? 'rgba(56, 189, 248, 0.15)' : 'var(--color-bg-card)',
+              color: mode === 'correlation' ? '#38bdf8' : 'var(--color-text-secondary)',
               fontWeight: 600,
               cursor: 'pointer',
             }}
           >
-            By Correlation ID
+            By Incident ID
           </button>
           <button
             onClick={exportDossierJSON}
             style={{
-              padding: '6px 12px',
+              padding: '6px 14px',
               fontSize: '12px',
               borderRadius: 'var(--border-radius)',
               border: '1px solid var(--color-border)',
-              background: 'var(--color-bg-secondary)',
+              background: 'var(--color-bg-card)',
               color: 'var(--color-text-primary)',
               fontWeight: 500,
               cursor: 'pointer',
             }}
           >
-            💾 Export JSON Dossier
+            💾 Download Report (JSON)
           </button>
         </div>
       </div>
@@ -130,49 +130,49 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          background: 'var(--color-bg-secondary)',
+          background: 'var(--color-bg-card)',
           padding: '12px 16px',
           borderRadius: 'var(--border-radius)',
           marginBottom: '20px',
           border: '1px solid var(--color-border)',
+          flexWrap: 'wrap',
         }}>
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-            Select Target Device:
+            Select Device:
           </span>
           <select
             value={selectedDeviceId}
             onChange={(e) => setSelectedDeviceId(e.target.value)}
             style={{
-              background: 'var(--color-bg-primary)',
+              background: 'var(--color-bg-base)',
               border: '1px solid var(--color-border)',
               color: 'var(--color-text-primary)',
               padding: '6px 12px',
               borderRadius: 'var(--border-radius)',
               fontSize: '13px',
-              fontFamily: 'monospace',
               cursor: 'pointer',
             }}
           >
             {devices.map((d) => (
               <option key={d.device_id} value={d.device_id}>
-                {d.device_id} — {d.device_name}
+                {d.device_name} ({d.device_id})
               </option>
             ))}
           </select>
           <button
             onClick={() => fetchDeviceProfile(selectedDeviceId)}
             style={{
-              padding: '6px 12px',
+              padding: '6px 14px',
               background: 'var(--color-accent-blue)',
               border: 'none',
               borderRadius: 'var(--border-radius)',
-              color: '#fff',
+              color: '#070a11',
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
             }}
           >
-            Refresh Profile
+            Refresh History
           </button>
         </div>
       ) : (
@@ -180,14 +180,15 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          background: 'var(--color-bg-secondary)',
+          background: 'var(--color-bg-card)',
           padding: '12px 16px',
           borderRadius: 'var(--border-radius)',
           marginBottom: '20px',
           border: '1px solid var(--color-border)',
+          flexWrap: 'wrap',
         }}>
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-            Correlation ID:
+            Enter Incident ID:
           </span>
           <input
             type="text"
@@ -195,7 +196,7 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
             value={correlationIdInput}
             onChange={(e) => setCorrelationIdInput(e.target.value)}
             style={{
-              background: 'var(--color-bg-primary)',
+              background: 'var(--color-bg-base)',
               border: '1px solid var(--color-border)',
               color: 'var(--color-text-primary)',
               padding: '6px 12px',
@@ -212,18 +213,18 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
               background: 'var(--color-accent-blue)',
               border: 'none',
               borderRadius: 'var(--border-radius)',
-              color: '#fff',
+              color: '#070a11',
               fontSize: '12px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
             }}
           >
-            Reconstruct Timeline
+            Find Events
           </button>
         </div>
       )}
 
-      {/* Forensic Metrics */}
+      {/* Stats Summary */}
       {mode === 'device' && profile && (
         <div style={{
           display: 'grid',
@@ -232,59 +233,54 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
           marginBottom: '20px',
         }}>
           {[
-            { label: 'Security Events', value: profile.total_security_events, color: 'var(--color-severity-high)' },
-            { label: 'Total Alerts', value: profile.total_alerts, color: 'var(--color-severity-critical)' },
-            { label: 'Telemetry Packets', value: (profile.recent_telemetry || []).length, color: 'var(--color-accent-teal)' },
-            { label: 'Audit Trail Entries', value: (profile.audit_trail || []).length, color: 'var(--color-accent-blue)' },
+            { label: 'Security Events', value: profile.total_security_events, color: '#f59e0b' },
+            { label: 'Alerts Triggered', value: profile.total_alerts, color: '#ef4444' },
+            { label: 'Data Packets Saved', value: (profile.recent_telemetry || []).length, color: '#38bdf8' },
+            { label: 'Audit Records', value: (profile.audit_trail || []).length, color: '#10b981' },
           ].map((m, i) => (
-            <div key={i} style={{ background: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '12px' }}>
-              <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>{m.label}</div>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: m.color, marginTop: '4px' }}>{m.value}</div>
+            <div key={i} style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '14px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>{m.label}</div>
+              <div style={{ fontSize: '24px', fontWeight: 700, color: m.color, marginTop: '2px' }}>{m.value}</div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Timeline Output */}
+      {/* Output */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-secondary)' }}>
-          Reconstructing forensic timeline...
+          Loading incident history...
         </div>
       ) : mode === 'correlation' ? (
         correlationTimeline ? (
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '12px', color: 'var(--color-accent-teal)' }}>
-              Correlated Incident Flow: {correlationTimeline.total_correlated_items} sequential event(s)
+            <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '12px', color: '#38bdf8' }}>
+              Timeline for Incident: {correlationTimeline.total_correlated_items} event(s) found
             </div>
             {correlationTimeline.timeline.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center', background: 'var(--color-bg-secondary)', borderRadius: 'var(--border-radius)' }}>
-                No events matched correlation ID "{correlationTimeline.correlation_id}".
+              <div style={{ padding: '24px', textAlign: 'center', background: 'var(--color-bg-card)', borderRadius: 'var(--border-radius)' }}>
+                No events found matching this ID.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {correlationTimeline.timeline.map((item: any, idx: number) => (
                   <div key={idx} style={{
-                    background: 'var(--color-bg-secondary)',
+                    background: 'var(--color-bg-card)',
                     border: '1px solid var(--color-border)',
-                    borderLeft: `4px solid ${item.type === 'SECURITY_ALERT' ? 'var(--color-severity-critical)' : item.type === 'SECURITY_EVENT' ? 'var(--color-severity-high)' : 'var(--color-accent-blue)'}`,
+                    borderLeft: `4px solid ${item.type === 'SECURITY_ALERT' ? '#ef4444' : item.type === 'SECURITY_EVENT' ? '#f59e0b' : '#38bdf8'}`,
                     borderRadius: 'var(--border-radius)',
                     padding: '12px 16px',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
-                        STEP #{idx + 1} · {item.type}
+                        Step #{idx + 1} · {item.type.replace(/_/g, ' ')}
                       </span>
-                      <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--color-text-muted)' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                         {item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : '--'}
                       </span>
                     </div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>
                       {item.summary}
-                    </div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', marginTop: '6px' }}>
-                      <pre style={{ overflowX: 'auto', background: 'var(--color-bg-primary)', padding: '8px', borderRadius: '4px' }}>
-                        {JSON.stringify(item.details, null, 2)}
-                      </pre>
                     </div>
                   </div>
                 ))}
@@ -292,41 +288,29 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
             )}
           </div>
         ) : (
-          <div style={{ padding: '40px', textAlign: 'center', background: 'var(--color-bg-secondary)', borderRadius: 'var(--border-radius)', color: 'var(--color-text-secondary)' }}>
-            Enter a Correlation ID above to reconstruct the complete attack narrative.
+          <div style={{ padding: '36px', textAlign: 'center', background: 'var(--color-bg-card)', borderRadius: 'var(--border-radius)', color: 'var(--color-text-secondary)' }}>
+            Enter an Incident ID above to see how the security event unfolded.
           </div>
         )
       ) : profile ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'var(--color-severity-critical)' }}>
-              Associated Security Alerts ({profile.alerts?.length || 0})
+            <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '10px', color: '#ef4444' }}>
+              Security Alerts for {selectedDeviceId} ({profile.alerts?.length || 0})
             </h3>
             {profile.alerts?.length === 0 ? (
-              <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', background: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '4px' }}>
-                No active security alerts linked to {selectedDeviceId}.
+              <div style={{ fontSize: '13px', color: 'var(--color-text-muted)', background: 'var(--color-bg-card)', padding: '14px', borderRadius: '6px' }}>
+                No active security alerts for this device.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {profile.alerts.map((al: any) => (
-                  <div key={al.alert_id} style={{ background: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '4px', border: '1px solid var(--color-border)' }}>
+                  <div key={al.alert_id} style={{ background: 'var(--color-bg-card)', padding: '14px', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600 }}>
-                      <span style={{ color: 'var(--color-severity-critical)' }}>{al.rule_name}</span>
-                      <span style={{ fontFamily: 'monospace' }}>{new Date(al.timestamp).toLocaleTimeString()}</span>
+                      <span style={{ color: '#ef4444' }}>{al.rule_name.replace(/_/g, ' ')}</span>
+                      <span>{new Date(al.timestamp).toLocaleTimeString()}</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: 'var(--color-text-primary)', marginTop: '4px' }}>{al.message}</p>
-                    {al.correlation_id && (
-                      <button
-                        onClick={() => {
-                          setMode('correlation');
-                          setCorrelationIdInput(al.correlation_id);
-                          fetchCorrelationTimeline(al.correlation_id);
-                        }}
-                        style={{ marginTop: '8px', fontSize: '11px', background: 'none', border: 'none', color: 'var(--color-accent-blue)', cursor: 'pointer', padding: 0 }}
-                      >
-                        🔗 Trace Correlation Timeline: {al.correlation_id} →
-                      </button>
-                    )}
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-primary)', marginTop: '4px' }}>{al.message}</p>
                   </div>
                 ))}
               </div>
@@ -334,17 +318,17 @@ export const ForensicTimeline: React.FC<ForensicTimelineProps> = ({ devices }) =
           </div>
 
           <div>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: 'var(--color-accent-blue)' }}>
-              Audit History ({profile.audit_trail?.length || 0})
+            <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '10px', color: '#38bdf8' }}>
+              Recent Activity History ({profile.audit_trail?.length || 0})
             </h3>
-            <div style={{ background: 'var(--color-bg-secondary)', padding: '12px', borderRadius: '4px', border: '1px solid var(--color-border)', maxHeight: '240px', overflowY: 'auto' }}>
+            <div style={{ background: 'var(--color-bg-card)', padding: '14px', borderRadius: '6px', border: '1px solid var(--color-border)', maxHeight: '220px', overflowY: 'auto' }}>
               {profile.audit_trail?.length === 0 ? (
-                <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>No audit actions recorded for this device.</div>
+                <div style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>No actions recorded yet for this device.</div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {profile.audit_trail.map((ad: any, i: number) => (
-                    <div key={i} style={{ fontSize: '11px', fontFamily: 'monospace', display: 'flex', justifyContent: 'space-between' }}>
-                      <span><strong>{ad.action}</strong> by {ad.actor} ({ad.result})</span>
+                    <div key={i} style={{ fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span><strong>{ad.action.replace(/_/g, ' ')}</strong> ({ad.result === 'SUCCESS' ? 'Success' : 'Failed'})</span>
                       <span style={{ color: 'var(--color-text-muted)' }}>{new Date(ad.timestamp).toLocaleTimeString()}</span>
                     </div>
                   ))}

@@ -23,7 +23,7 @@ export const LiveTelemetryFeed: React.FC<LiveTelemetryFeedProps> = ({ events, ws
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-          📡 Live Telemetry & Event Stream
+          📡 Live Activity Log
         </h3>
         <span style={{
           fontSize: '12px',
@@ -38,7 +38,7 @@ export const LiveTelemetryFeed: React.FC<LiveTelemetryFeedProps> = ({ events, ws
             borderRadius: '50%',
             background: wsConnected ? 'var(--color-status-online)' : 'var(--color-status-offline)',
           }} />
-          {wsConnected ? 'WebSocket LIVE' : 'WebSocket Disconnected'}
+          {wsConnected ? 'Live Connection Active' : 'Disconnected'}
         </span>
       </div>
 
@@ -54,7 +54,7 @@ export const LiveTelemetryFeed: React.FC<LiveTelemetryFeedProps> = ({ events, ws
       }}>
         {events.length === 0 ? (
           <div style={{ color: 'var(--color-text-muted)', padding: '8px' }}>
-            Listening for live telemetry, heartbeats, and security events...
+            Listening for device activity and live alerts...
           </div>
         ) : (
           events.map((e) => (

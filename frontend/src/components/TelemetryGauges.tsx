@@ -16,26 +16,24 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
     <div style={{ marginBottom: '28px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
         <div>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: 'var(--color-accent-cyan)' }}>◉</span> Live Telemetry & Hardware Instrument Panels
+          <h2 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+            📡 Device Sensors & Live Readings
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-            High-frequency sensor metrics streamed via WebSocket pipeline
+          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+            Live data sent by devices every few seconds over the network
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{
-            fontSize: '11px',
-            fontFamily: 'monospace',
-            color: 'var(--color-accent-cyan)',
-            background: 'rgba(6, 182, 212, 0.1)',
-            padding: '3px 8px',
-            borderRadius: '4px',
-            border: '1px solid rgba(6, 182, 212, 0.25)',
-          }}>
-            INGEST: 100% NOMINAL
-          </span>
-        </div>
+        <span style={{
+          fontSize: '12px',
+          color: 'var(--color-accent-blue)',
+          background: 'rgba(56, 189, 248, 0.1)',
+          padding: '4px 10px',
+          borderRadius: '6px',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          fontWeight: 600,
+        }}>
+          Live Updating
+        </span>
       </div>
 
       <div style={{
@@ -50,7 +48,7 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
           const isMotion = device.device_type === 'motion_sensor' || device.device_id.includes('MOTION');
           const isActuator = device.device_type === 'smart_actuator' || device.device_id.includes('ACTUATOR');
 
-          // Temperature metrics
+          // Temperature values
           const tempC = telem.temperature_c !== undefined 
             ? Number(telem.temperature_c) 
             : (raw.temperature_c !== undefined ? Number(raw.temperature_c) : null);
@@ -60,7 +58,7 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
           const isOverheat = tempC !== null && tempC > 35;
           const isCold = tempC !== null && tempC < 16;
 
-          // Motion metrics
+          // Motion values
           const motionDetected = telem.motion_detected === true || raw.motion_detected === true;
           const ambientLight = telem.ambient_light_lux !== undefined 
             ? telem.ambient_light_lux 
@@ -69,7 +67,7 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
             ? telem.total_trigger_count 
             : (raw.total_trigger_count !== undefined ? raw.total_trigger_count : null);
 
-          // Actuator metrics
+          // Actuator values
           const actuatorState = telem.actuator_state || raw.actuator_state || 'IDLE';
           const powerWatts = telem.power_consumption_watts !== undefined 
             ? telem.power_consumption_watts 
@@ -79,8 +77,6 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
             : (raw.target_setpoint_c !== undefined ? raw.target_setpoint_c : 22.0);
 
           const hasData = tempC !== null || motionDetected || ambientLight !== null || telem.actuator_state !== undefined || raw.actuator_state !== undefined;
-
-          // Arc stroke calculations for temperature (0 - 100°C)
           const gaugePercent = Math.min(100, Math.max(0, ((tempC || 20) / 100) * 100));
 
           return (
@@ -97,13 +93,10 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                 cursor: 'pointer',
                 position: 'relative',
                 overflow: 'hidden',
-                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: isOverheat
-                  ? '0 0 20px rgba(239, 68, 68, 0.25)'
-                  : '0 4px 12px rgba(0, 0, 0, 0.2)',
+                transition: 'border-color 0.2s, transform 0.2s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-accent-cyan)';
+                e.currentTarget.style.borderColor = 'var(--color-accent-blue)';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
@@ -111,23 +104,8 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              {/* Subtle Ambient Glow */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '120px',
-                height: '120px',
-                background: isOverheat 
-                  ? 'radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%)'
-                  : isTemp
-                  ? 'radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, transparent 70%)',
-                pointerEvents: 'none',
-              }} />
-
-              {/* Card Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontWeight: 700, fontSize: '14px', fontFamily: 'monospace', color: '#fff' }}>
@@ -135,19 +113,19 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                     </span>
                     {device.device_id.startsWith('LPC') && (
                       <span style={{
-                        fontSize: '9px',
+                        fontSize: '10px',
                         padding: '1px 6px',
                         borderRadius: '4px',
                         background: 'rgba(16, 185, 129, 0.15)',
                         color: '#10b981',
                         border: '1px solid rgba(16, 185, 129, 0.3)',
-                        fontWeight: 700,
+                        fontWeight: 600,
                       }}>
-                        ARM7TDMI
+                        Hardware Node
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
                     {device.device_name}
                   </div>
                 </div>
@@ -160,40 +138,30 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                   background: device.status === 'ONLINE' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(100, 116, 139, 0.15)',
                   color: device.status === 'ONLINE' ? '#10b981' : '#64748b',
                   border: `1px solid ${device.status === 'ONLINE' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(100, 116, 139, 0.2)'}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
                 }}>
-                  <span style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    background: device.status === 'ONLINE' ? '#10b981' : '#64748b',
-                  }} />
-                  {device.status}
+                  ● {device.status === 'ONLINE' ? 'Online' : device.status}
                 </span>
               </div>
 
-              {/* Instrument Body */}
+              {/* Sensor Reading */}
               {!hasData ? (
                 <div style={{
-                  padding: '28px 0',
+                  padding: '24px 0',
                   textAlign: 'center',
                   color: 'var(--color-text-muted)',
-                  fontSize: '12px',
+                  fontSize: '13px',
                   background: 'var(--color-bg-base)',
                   borderRadius: 'var(--border-radius)',
                   border: '1px dashed var(--color-border)',
                 }}>
-                  <div style={{ fontSize: '18px', marginBottom: '6px' }}>⏳</div>
-                  Awaiting telemetry stream...
+                  ⏳ Waiting for device readings...
                   <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                    Start simulation or run bridge
+                    Click "Start Devices" above to begin
                   </div>
                 </div>
               ) : isTemp ? (
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                     <div>
                       <div style={{
                         fontSize: '32px',
@@ -202,10 +170,10 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                         fontFamily: 'monospace',
                         lineHeight: 1.1,
                       }}>
-                        {tempC !== null ? `${tempC}°C` : '--'}
+                        {tempC !== null ? `${tempC} °C` : '--'}
                       </div>
-                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-                        {tempF !== null ? `${tempF}°F` : '--'} · LM35 Transducer
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '3px' }}>
+                        {tempF !== null ? `(${tempF} °F)` : ''} · Temperature Sensor
                       </div>
                     </div>
 
@@ -217,10 +185,9 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                         padding: '4px 10px',
                         borderRadius: '6px',
                         fontSize: '11px',
-                        fontWeight: 800,
-                        letterSpacing: '0.04em',
+                        fontWeight: 700,
                       }}>
-                        🔥 OVERHEAT
+                        🔥 High Temp Warning
                       </span>
                     ) : (
                       <span style={{
@@ -230,14 +197,14 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                         padding: '4px 8px',
                         borderRadius: '6px',
                         fontSize: '11px',
-                        fontWeight: 700,
+                        fontWeight: 600,
                       }}>
-                        OPTIMAL
+                        Normal
                       </span>
                     )}
                   </div>
 
-                  {/* Gradient Meter Bar */}
+                  {/* Range Progress Bar */}
                   <div style={{
                     height: '8px',
                     background: '#090e18',
@@ -253,46 +220,41 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                         ? 'linear-gradient(90deg, #f59e0b 0%, #ef4444 100%)'
                         : 'linear-gradient(90deg, #06b6d4 0%, #10b981 100%)',
                       transition: 'width 0.4s ease',
-                      boxShadow: isOverheat ? '0 0 10px #ef4444' : 'none',
                     }} />
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-                    <span>Safe Window: 15°C – 35°C</span>
-                    <span>Variance: ±0.03°C</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                    <span>Normal Range: 15°C to 35°C</span>
+                    <span>Status: <strong>{isOverheat ? 'Abnormal' : 'Healthy'}</strong></span>
                   </div>
                 </div>
               ) : isMotion ? (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
-                    {/* Animated Sonar Radar Icon */}
                     <div style={{
-                      width: '46px',
-                      height: '46px',
+                      width: '44px',
+                      height: '44px',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: motionDetected ? 'rgba(239, 68, 68, 0.18)' : 'rgba(16, 185, 129, 0.12)',
+                      background: motionDetected ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.12)',
                       border: `2px solid ${motionDetected ? '#ef4444' : '#10b981'}`,
                       fontSize: '20px',
-                      boxShadow: motionDetected ? '0 0 16px rgba(239, 68, 68, 0.4)' : 'none',
-                      transition: 'all 0.3s ease',
                     }}>
                       {motionDetected ? '🚶' : '🛡️'}
                     </div>
 
                     <div>
                       <div style={{
-                        fontSize: '17px',
-                        fontWeight: 800,
+                        fontSize: '16px',
+                        fontWeight: 700,
                         color: motionDetected ? '#ef4444' : '#10b981',
-                        letterSpacing: '0.02em',
                       }}>
-                        {motionDetected ? 'MOTION DETECTED' : 'ZONE SECURED'}
+                        {motionDetected ? 'Motion Detected' : 'No Motion Detected'}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-                        PIR Radar Perimeter Protection
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                        Area Motion Sensor
                       </div>
                     </div>
                   </div>
@@ -301,19 +263,19 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
                     gap: '8px',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     background: 'var(--color-bg-base)',
-                    padding: '10px 12px',
+                    padding: '8px 12px',
                     borderRadius: '6px',
                     border: '1px solid var(--color-border)',
                   }}>
                     <div>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Ambient Lux:</span>{' '}
-                      <strong style={{ color: '#fff' }}>{ambientLight !== null ? `${ambientLight} lx` : '--'}</strong>
+                      <span style={{ color: 'var(--color-text-muted)' }}>Room Light:</span>{' '}
+                      <strong>{ambientLight !== null ? `${ambientLight} lux` : '--'}</strong>
                     </div>
                     <div>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Triggers:</span>{' '}
-                      <strong style={{ color: '#38bdf8' }}>{triggerCount !== null ? triggerCount : '--'}</strong>
+                      <span style={{ color: 'var(--color-text-muted)' }}>Times Triggered:</span>{' '}
+                      <strong>{triggerCount !== null ? triggerCount : '--'}</strong>
                     </div>
                   </div>
                 </div>
@@ -321,11 +283,11 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div>
-                      <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff' }}>
-                        HVAC: {actuatorState}
+                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>
+                        Air Conditioner: {actuatorState}
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-                        Target: {setpointC}°C
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                        Target Temperature: {setpointC}°C
                       </div>
                     </div>
 
@@ -333,47 +295,38 @@ export const TelemetryGauges: React.FC<TelemetryGaugesProps> = ({
                       padding: '4px 10px',
                       borderRadius: '6px',
                       background: 'rgba(56, 189, 248, 0.12)',
-                      border: '1px solid rgba(56, 189, 248, 0.25)',
                       color: '#38bdf8',
                       fontWeight: 700,
                       fontSize: '13px',
                       fontFamily: 'monospace',
+                      border: '1px solid rgba(56, 189, 248, 0.25)',
                     }}>
                       ⚡ {powerWatts !== null ? `${powerWatts} W` : '--'}
                     </span>
                   </div>
 
                   <div style={{
-                    fontSize: '11px',
+                    fontSize: '12px',
                     color: 'var(--color-text-secondary)',
                     background: 'var(--color-bg-base)',
                     padding: '8px 10px',
                     borderRadius: '6px',
                     border: '1px solid var(--color-border)',
                   }}>
-                    Capability Policy: <strong style={{ color: 'var(--color-accent-cyan)' }}>CONTROL_ACTUATOR</strong> token required
+                    Security Policy: Only authorized operators can change settings
                   </div>
                 </div>
-              ) : (
-                <pre style={{ fontSize: '11px', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--color-text-muted)' }}>
-                  {JSON.stringify(telem, null, 2)}
-                </pre>
-              )}
+              ) : null}
 
-              {/* Card Footer Link */}
+              {/* Footer */}
               <div style={{
                 marginTop: '14px',
                 paddingTop: '10px',
                 borderTop: '1px solid var(--color-border-subtle)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                textAlign: 'right',
               }}>
-                <span style={{ fontSize: '11px', color: 'var(--color-accent-blue)', fontWeight: 600 }}>
-                  🔍 Inspect Metrics & Keys →
-                </span>
-                <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
-                  SHA-256 VALID
+                <span style={{ fontSize: '12px', color: 'var(--color-accent-blue)', fontWeight: 600 }}>
+                  View Device Details & History →
                 </span>
               </div>
             </div>

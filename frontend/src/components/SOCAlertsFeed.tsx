@@ -67,29 +67,28 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
   const highCount = alerts.filter((a) => a.severity === 'HIGH' && a.status === 'ACTIVE').length;
   const resolvedCount = alerts.filter((a) => a.status === 'RESOLVED').length;
 
-  const getSeverityStyle = (sev: string) => {
+  const getSeverityBadge = (sev: string) => {
     switch (sev) {
       case 'CRITICAL':
-        return { bg: 'rgba(239, 68, 68, 0.15)', text: '#ef4444', border: '#ef4444' };
+        return { bg: 'rgba(239, 68, 68, 0.15)', text: '#ef4444', label: 'High Severity' };
       case 'HIGH':
-        return { bg: 'rgba(249, 115, 22, 0.15)', text: '#f97316', border: '#f97316' };
+        return { bg: 'rgba(249, 115, 22, 0.15)', text: '#f97316', label: 'Medium-High' };
       case 'MEDIUM':
-        return { bg: 'rgba(245, 158, 11, 0.15)', text: '#f59e0b', border: '#f59e0b' };
+        return { bg: 'rgba(245, 158, 11, 0.15)', text: '#f59e0b', label: 'Medium' };
       default:
-        return { bg: 'rgba(16, 185, 129, 0.15)', text: '#10b981', border: '#10b981' };
+        return { bg: 'rgba(16, 185, 129, 0.15)', text: '#10b981', label: 'Low' };
     }
   };
 
   return (
     <div style={{ marginBottom: '28px' }}>
-      {/* SOC Triage Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: '#ef4444' }}>🚨</span> Security Operations Center (SOC) Alert Triage
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+            🚨 Security Alerts & Warnings
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-            Real-time heuristic & behavioral detections with autonomous SOAR response capabilities
+          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+            Warnings and suspicious activities detected across your connected devices.
           </p>
         </div>
 
@@ -100,54 +99,54 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
               onClick={() => setFilter(tab)}
               style={{
                 padding: '6px 14px',
-                fontSize: '11px',
+                fontSize: '12px',
                 borderRadius: '6px',
                 border: filter === tab ? '1px solid var(--color-accent-blue)' : '1px solid var(--color-border)',
                 background: filter === tab ? 'rgba(56, 189, 248, 0.15)' : 'var(--color-bg-card)',
                 color: filter === tab ? '#38bdf8' : 'var(--color-text-secondary)',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
-              {tab === 'ALL' ? 'ALL INCIDENTS' : tab}
+              {tab === 'ALL' ? 'All Alerts' : tab === 'ACTIVE' ? 'Active' : 'Resolved'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Mini Threat Metric Bar */}
+      {/* Summary Counts */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
         gap: '12px',
         marginBottom: '20px',
       }}>
-        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '12px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Critical Threats</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: criticalCount > 0 ? '#ef4444' : '#10b981', marginTop: '2px' }}>
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '14px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Urgent Alerts</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: criticalCount > 0 ? '#ef4444' : '#10b981', marginTop: '2px' }}>
             {criticalCount}
           </div>
         </div>
 
-        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '12px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>High / Medium Alerts</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: highCount > 0 ? '#f59e0b' : 'var(--color-text-primary)', marginTop: '2px' }}>
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '14px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Standard Alerts</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: highCount > 0 ? '#f59e0b' : 'var(--color-text-primary)', marginTop: '2px' }}>
             {highCount}
           </div>
         </div>
 
-        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '12px' }}>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Triaged & Resolved</div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#10b981', marginTop: '2px' }}>
+        <div style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 'var(--border-radius)', padding: '14px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Resolved Cases</div>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: '#10b981', marginTop: '2px' }}>
             {resolvedCount}
           </div>
         </div>
       </div>
 
-      {/* Alert Feed List */}
+      {/* Alerts Feed */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-secondary)' }}>
-          Loading SOC incident queue...
+          Loading alerts...
         </div>
       ) : alerts.length === 0 ? (
         <div style={{
@@ -159,15 +158,15 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
           color: 'var(--color-text-secondary)',
         }}>
           <div style={{ fontSize: '32px', marginBottom: '8px' }}>🛡️</div>
-          <div style={{ fontSize: '15px', fontWeight: 700, color: '#10b981' }}>ZERO UNRESOLVED SECURITY INCIDENTS</div>
-          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '6px' }}>
-            The detection engine has not reported any active anomalous telemetry or unauthorized actions.
+          <div style={{ fontSize: '15px', fontWeight: 700, color: '#10b981' }}>No Security Alerts</div>
+          <div style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginTop: '6px' }}>
+            All devices are behaving normally with no suspicious activity detected.
           </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {alerts.map((al) => {
-            const sev = getSeverityStyle(al.severity);
+            const sev = getSeverityBadge(al.severity);
             const isCritical = al.severity === 'CRITICAL';
 
             return (
@@ -181,55 +180,50 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  boxShadow: isCritical ? '0 0 16px rgba(239, 68, 68, 0.15)' : 'none',
                   flexWrap: 'wrap',
                   gap: '14px',
                 }}
               >
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
                     <span style={{
-                      fontSize: '10px',
-                      fontWeight: 800,
+                      fontSize: '11px',
+                      fontWeight: 700,
                       padding: '2px 8px',
-                      borderRadius: '12px',
+                      borderRadius: '10px',
                       background: sev.bg,
                       color: sev.text,
-                      border: `1px solid ${sev.border}`,
-                      letterSpacing: '0.04em',
                     }}>
-                      {al.severity}
+                      {sev.label}
                     </span>
 
-                    <span style={{ fontFamily: 'monospace', fontSize: '13px', fontWeight: 800, color: '#fff' }}>
-                      {al.rule_name}
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>
+                      {al.rule_name.replace(/_/g, ' ')}
                     </span>
 
                     <span style={{
-                      fontSize: '10px',
+                      fontSize: '11px',
                       padding: '2px 6px',
                       borderRadius: '4px',
                       background: al.status === 'ACTIVE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.12)',
                       color: al.status === 'ACTIVE' ? '#ef4444' : '#10b981',
-                      border: `1px solid ${al.status === 'ACTIVE' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
-                      fontWeight: 700,
+                      fontWeight: 600,
                     }}>
-                      {al.status}
+                      {al.status === 'ACTIVE' ? 'Active' : 'Resolved'}
                     </span>
                   </div>
 
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-primary)', marginBottom: '10px', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-primary)', marginBottom: '8px' }}>
                     {al.message}
                   </p>
 
-                  <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', flexWrap: 'wrap' }}>
-                    <span>Target Node: <strong style={{ color: '#fff' }}>{al.device_id}</strong></span>
-                    {al.correlation_id && <span>Corr ID: <strong style={{ color: 'var(--color-accent-cyan)' }}>{al.correlation_id}</strong></span>}
-                    <span>Timestamp: {new Date(al.timestamp).toLocaleTimeString()}</span>
+                  <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--color-text-secondary)', flexWrap: 'wrap' }}>
+                    <span>Device: <strong style={{ color: '#fff' }}>{al.device_id}</strong></span>
+                    <span>Time: {new Date(al.timestamp).toLocaleTimeString()}</span>
                   </div>
                 </div>
 
-                {/* SOAR Action Buttons */}
+                {/* Actions */}
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   {al.status === 'ACTIVE' && (
                     <button
@@ -241,13 +235,12 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
                         color: '#ef4444',
                         borderRadius: 'var(--border-radius)',
                         fontSize: '12px',
-                        fontWeight: 700,
+                        fontWeight: 600,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
-                        transition: 'background 0.15s ease',
                       }}
                     >
-                      🚨 QUARANTINE NODE
+                      🚫 Block Device
                     </button>
                   )}
 
@@ -261,16 +254,16 @@ export const SOCAlertsFeed: React.FC<SOCAlertsFeedProps> = ({
                         color: '#10b981',
                         borderRadius: 'var(--border-radius)',
                         fontSize: '12px',
-                        fontWeight: 600,
+                        fontWeight: 500,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      ✓ Mark Resolved
+                      ✓ Mark as Resolved
                     </button>
                   ) : (
-                    <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      ✓ CASE CLOSED
+                    <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 600 }}>
+                      ✓ Resolved
                     </span>
                   )}
                 </div>

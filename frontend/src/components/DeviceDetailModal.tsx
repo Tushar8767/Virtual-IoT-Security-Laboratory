@@ -146,9 +146,9 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
           gap: '16px',
         }}>
           {[
-            { id: 'telemetry', label: '📊 Telemetry History' },
-            { id: 'security', label: '🔒 Capabilities & Auth' },
-            { id: 'raw', label: '📄 Raw Specs' },
+            { id: 'telemetry', label: '📊 Recent Readings' },
+            { id: 'security', label: '🔒 Permissions & Controls' },
+            { id: 'raw', label: '📄 Technical Data' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -219,7 +219,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ background: 'var(--color-bg-primary)', padding: '16px', borderRadius: 'var(--border-radius)', border: '1px solid var(--color-border)' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-accent-blue)', marginBottom: '8px' }}>
-                  Granted Capabilities (Role-Based Access)
+                  Allowed Permissions & Roles
                 </h4>
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {device.capabilities && device.capabilities.length > 0 ? (
@@ -233,21 +233,21 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                         border: '1px solid rgba(47, 129, 247, 0.3)',
                         fontWeight: 600,
                       }}>
-                        🔑 {cap}
+                        🔑 {cap.replace(/_/g, ' ')}
                       </span>
                     ))
                   ) : (
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>No capabilities granted.</span>
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>No permissions assigned.</span>
                   )}
                 </div>
               </div>
 
               <div style={{ background: 'var(--color-bg-primary)', padding: '16px', borderRadius: 'var(--border-radius)', border: '1px solid var(--color-border)' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                  Send Actuator Command (Capability Verification)
+                  Send Test Command
                 </h4>
                 <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginBottom: '12px' }}>
-                  Testing capability verification: Dispatches a signed actuator command to verify if this node is authorized.
+                  Test if this device responds properly to remote commands.
                 </p>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
@@ -263,7 +263,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                       cursor: 'pointer',
                     }}
                   >
-                    Send TOGGLE_STATE
+                    Toggle Power / State
                   </button>
                   <button
                     onClick={() => sendTestCommand('SET_TARGET_TEMP')}
@@ -278,7 +278,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                       cursor: 'pointer',
                     }}
                   >
-                    Send SET_TEMP (24°C)
+                    Set Temperature (24°C)
                   </button>
                 </div>
                 {commandFeedback && (
@@ -290,7 +290,7 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
 
               <div style={{ background: 'var(--color-bg-primary)', padding: '16px', borderRadius: 'var(--border-radius)', border: '1px solid var(--color-border)' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '8px' }}>
-                  Administrative Controls
+                  Device Management
                 </h4>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {device.status === 'SUSPENDED' ? (
@@ -298,21 +298,21 @@ export const DeviceDetailModal: React.FC<DeviceDetailModalProps> = ({
                       onClick={() => onAction(device.device_id, 'reinstate')}
                       style={{ padding: '6px 12px', background: 'var(--color-status-online)', border: 'none', borderRadius: '4px', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                     >
-                      Reinstate Device
+                      Unblock Device
                     </button>
                   ) : (
                     <button
                       onClick={() => onAction(device.device_id, 'suspend')}
                       style={{ padding: '6px 12px', background: 'var(--color-status-suspended)', border: 'none', borderRadius: '4px', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                     >
-                      Suspend Device
+                      Block Device
                     </button>
                   )}
                   <button
                     onClick={() => onAction(device.device_id, 'revoke')}
                     style={{ padding: '6px 12px', background: 'var(--color-severity-critical)', border: 'none', borderRadius: '4px', color: '#fff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                   >
-                    Revoke Permanently
+                    Revoke Access
                   </button>
                 </div>
               </div>

@@ -151,11 +151,11 @@ export const DashboardPage: React.FC = () => {
           overflowX: 'auto',
         }}>
           {[
-            { id: 'operations', label: '📊 Operations & Telemetry' },
-            { id: 'attacks', label: '⚔️ Attack Simulator (A–G)' },
-            { id: 'soc', label: '🚨 SOC Alerts & Defense', badge: activeAlertsCount },
-            { id: 'audit', label: '⛓️ Cryptographic Audit Ledger' },
-            { id: 'forensics', label: '🔍 Forensic Investigation' },
+            { id: 'operations', label: '📊 Live Device Data' },
+            { id: 'attacks', label: '🧪 Security Tests' },
+            { id: 'soc', label: '🚨 Security Alerts', badge: activeAlertsCount },
+            { id: 'audit', label: '⛓️ Audit Log & Tamper Check' },
+            { id: 'forensics', label: '🔍 Incident Investigation' },
           ].map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -212,10 +212,10 @@ export const DashboardPage: React.FC = () => {
               marginBottom: '28px',
             }}>
               {[
-                { label: 'Total Fleet Size', value: summary.total, sub: 'Registered Nodes', color: '#fff', accent: 'var(--color-accent-cyan)' },
-                { label: 'Active Online', value: summary.online, sub: 'Streaming Telemetry', color: '#10b981', accent: '#10b981' },
-                { label: 'Provisioned', value: summary.provisioned, sub: 'Pending First Connect', color: '#38bdf8', accent: '#38bdf8' },
-                { label: 'Suspended / Revoked', value: summary.suspended, sub: 'Security Quarantined', color: summary.suspended > 0 ? '#ef4444' : '#64748b', accent: '#ef4444' },
+                { label: 'Total Devices', value: summary.total, sub: 'All registered devices', color: '#fff', accent: 'var(--color-accent-cyan)' },
+                { label: 'Online Devices', value: summary.online, sub: 'Sending live data', color: '#10b981', accent: '#10b981' },
+                { label: 'New Devices', value: summary.provisioned, sub: 'Ready to connect', color: '#38bdf8', accent: '#38bdf8' },
+                { label: 'Blocked Devices', value: summary.suspended, sub: 'Blocked for safety', color: summary.suspended > 0 ? '#ef4444' : '#64748b', accent: '#ef4444' },
               ].map((m, i) => (
                 <div key={i} style={{
                   background: 'var(--color-bg-card)',
@@ -259,10 +259,10 @@ export const DashboardPage: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <div>
                   <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                    Device Registry & Hardware Node Inventory
+                    Registered Devices
                   </h2>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-                    Hardware profiles, cryptographic token states, and access control capabilities
+                    List of all connected devices, their current status, and quick actions
                   </p>
                 </div>
               </div>
