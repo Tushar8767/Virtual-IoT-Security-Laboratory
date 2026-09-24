@@ -7,6 +7,7 @@ import { AttackLauncher } from '../components/AttackLauncher';
 import { SOCAlertsFeed } from '../components/SOCAlertsFeed';
 import { AuditChainVisualizer } from '../components/AuditChainVisualizer';
 import { ForensicTimeline } from '../components/ForensicTimeline';
+import { Navbar } from '../components/Navbar';
 import { wsService } from '../services/websocket';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
@@ -21,6 +22,7 @@ export const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [wsConnected, setWsConnected] = useState(false);
   const [simRunning, setSimRunning] = useState(false);
+  const [activeAlertsCount, setActiveAlertsCount] = useState(0);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const fetchDevices = async () => {
@@ -36,6 +38,12 @@ export const DashboardPage: React.FC = () => {
       const labRes = await fetch(`${API_BASE}/api/lab/status`);
       const labData = await labRes.json();
       setSimRunning(labData?.simulation?.running || false);
+
+      const alertRes = await fetch(`${API_BASE}/api/security/alerts?status=ACTIVE`);
+      if (alertRes.ok) {
+        const alertData = await alertRes.json();
+        setActiveAlertsCount(alertData.alerts?.length || alertData.count || 0);
+      }
 
       const telemRes = await fetch(`${API_BASE}/api/telemetry/latest`);
       if (telemRes.ok) {
@@ -57,7 +65,7 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     fetchDevices();
-    const interval = setInterval(fetchDevices, 5000);
+    const interval = setInterval(fetchDevices, 4000);
 
     wsService.connect();
     setWsConnected(wsService.isConnected);
@@ -122,187 +130,192 @@ export const DashboardPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1280px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            🔬 Virtual IoT Security Laboratory
-          </h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-            Cyber Operations & Monitoring Dashboard · Live Simulation Fleet
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            onClick={toggleSimulation}
-            style={{
-              background: simRunning ? 'var(--color-severity-critical)' : 'var(--color-status-online)',
-              border: 'none',
-              color: '#fff',
-              fontWeight: 600,
-              padding: '8px 16px',
-              borderRadius: 'var(--border-radius)',
-              cursor: 'pointer',
-              fontSize: '13px',
-              transition: 'background 0.2s',
-            }}
-          >
-            {simRunning ? '⏹ Stop Simulation' : '▶ Start Simulation'}
-          </button>
-          <button
-            onClick={fetchDevices}
-            style={{
-              background: 'var(--color-bg-secondary)',
-              border: '1px solid var(--color-border)',
-              color: 'var(--color-text-primary)',
-              padding: '8px 14px',
-              borderRadius: 'var(--border-radius)',
-              cursor: 'pointer',
-              fontSize: '13px',
-            }}
-          >
-            🔄 Refresh
-          </button>
-        </div>
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Enterprise Cyber Navbar */}
+      <Navbar
+        simRunning={simRunning}
+        onToggleSim={toggleSimulation}
+        onRefresh={fetchDevices}
+        wsConnected={wsConnected}
+        activeAlertsCount={activeAlertsCount}
+      />
 
-      {/* Main Tab Navigation */}
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        borderBottom: '1px solid var(--color-border)',
-        marginBottom: '24px',
-        paddingBottom: '2px',
-      }}>
-        {[
-          { id: 'operations', label: '📊 Operations & Telemetry' },
-          { id: 'attacks', label: '⚔️ Attack Simulator (A–G)' },
-          { id: 'soc', label: '🚨 SOC Alerts & Defense' },
-          { id: 'audit', label: '⛓️ Cryptographic Audit Ledger' },
-          { id: 'forensics', label: '🔍 Forensic Investigation' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            style={{
-              background: activeTab === tab.id ? 'var(--color-bg-secondary)' : 'transparent',
-              border: '1px solid',
-              borderColor: activeTab === tab.id ? 'var(--color-border)' : 'transparent',
-              borderBottomColor: activeTab === tab.id ? 'var(--color-bg-secondary)' : 'transparent',
-              borderTopLeftRadius: 'var(--border-radius)',
-              borderTopRightRadius: 'var(--border-radius)',
-              color: activeTab === tab.id ? 'var(--color-accent-blue)' : 'var(--color-text-secondary)',
-              fontWeight: 600,
-              fontSize: '14px',
-              padding: '10px 18px',
-              cursor: 'pointer',
-              marginBottom: activeTab === tab.id ? '-1px' : '0',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <main style={{ padding: '0 28px 40px', maxWidth: '1360px', margin: '0 auto', width: '100%' }}>
+        {/* Navigation Tabs with Badges */}
+        <div style={{
+          display: 'flex',
+          gap: '10px',
+          borderBottom: '1px solid var(--color-border)',
+          marginBottom: '26px',
+          paddingBottom: '2px',
+          overflowX: 'auto',
+        }}>
+          {[
+            { id: 'operations', label: '📊 Operations & Telemetry' },
+            { id: 'attacks', label: '⚔️ Attack Simulator (A–G)' },
+            { id: 'soc', label: '🚨 SOC Alerts & Defense', badge: activeAlertsCount },
+            { id: 'audit', label: '⛓️ Cryptographic Audit Ledger' },
+            { id: 'forensics', label: '🔍 Forensic Investigation' },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  background: isActive ? 'var(--color-bg-card)' : 'transparent',
+                  border: '1px solid',
+                  borderColor: isActive ? 'var(--color-border)' : 'transparent',
+                  borderBottomColor: isActive ? 'var(--color-bg-card)' : 'transparent',
+                  borderTopLeftRadius: 'var(--border-radius)',
+                  borderTopRightRadius: 'var(--border-radius)',
+                  color: isActive ? 'var(--color-accent-blue)' : 'var(--color-text-secondary)',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  padding: '12px 20px',
+                  cursor: 'pointer',
+                  marginBottom: isActive ? '-1px' : '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <span>{tab.label}</span>
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    boxShadow: '0 0 8px rgba(239, 68, 68, 0.4)',
+                  }}>
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-      {/* TAB 1: OPERATIONS & TELEMETRY */}
-      {activeTab === 'operations' && (
-        <>
-          {/* Summary Metrics */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '16px',
-            marginBottom: '24px',
-          }}>
-            {[
-              { label: 'Total Fleet', value: summary.total, color: 'var(--color-text-primary)' },
-              { label: 'Provisioned', value: summary.provisioned, color: '#58a6ff' },
-              { label: 'Online Nodes', value: summary.online, color: 'var(--color-status-online)' },
-              { label: 'Suspended', value: summary.suspended, color: 'var(--color-status-suspended)' },
-            ].map((m, i) => (
-              <div key={i} style={{
-                background: 'var(--color-bg-secondary)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--border-radius)',
-                padding: '16px',
-              }}>
-                <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  {m.label}
+        {/* TAB 1: OPERATIONS & TELEMETRY */}
+        {activeTab === 'operations' && (
+          <>
+            {/* Stat Cards */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '16px',
+              marginBottom: '28px',
+            }}>
+              {[
+                { label: 'Total Fleet Size', value: summary.total, sub: 'Registered Nodes', color: '#fff', accent: 'var(--color-accent-cyan)' },
+                { label: 'Active Online', value: summary.online, sub: 'Streaming Telemetry', color: '#10b981', accent: '#10b981' },
+                { label: 'Provisioned', value: summary.provisioned, sub: 'Pending First Connect', color: '#38bdf8', accent: '#38bdf8' },
+                { label: 'Suspended / Revoked', value: summary.suspended, sub: 'Security Quarantined', color: summary.suspended > 0 ? '#ef4444' : '#64748b', accent: '#ef4444' },
+              ].map((m, i) => (
+                <div key={i} style={{
+                  background: 'var(--color-bg-card)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--border-radius-lg)',
+                  padding: '18px 20px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '2px',
+                    background: m.accent,
+                  }} />
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                    {m.label}
+                  </div>
+                  <div style={{ fontSize: '30px', fontWeight: 800, color: m.color, marginTop: '4px', lineHeight: 1.1 }}>
+                    {m.value}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                    {m.sub}
+                  </div>
                 </div>
-                <div style={{ fontSize: '28px', fontWeight: 700, color: m.color }}>
-                  {m.value}
+              ))}
+            </div>
+
+            {/* Hardware Telemetry Instrument Panels */}
+            <TelemetryGauges
+              devices={devices}
+              telemetryMap={telemetryMap}
+              onInspectDevice={(dev) => setSelectedDevice(dev)}
+            />
+
+            {/* Device Registry Table */}
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div>
+                  <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                    Device Registry & Hardware Node Inventory
+                  </h2>
+                  <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                    Hardware profiles, cryptographic token states, and access control capabilities
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Telemetry Visual Gauges */}
-          <TelemetryGauges
-            devices={devices}
-            telemetryMap={telemetryMap}
-            onInspectDevice={(dev) => setSelectedDevice(dev)}
-          />
-
-          {/* Device Registry Table */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                Device Registry & Hardware Nodes
-              </h2>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                Click "Inspect" to view telemetry logs & access control capabilities
-              </span>
+              <DeviceList
+                devices={devices}
+                onAction={handleDeviceAction}
+                onInspect={(dev) => setSelectedDevice(dev)}
+                loading={loading}
+              />
             </div>
-            <DeviceList
-              devices={devices}
-              onAction={handleDeviceAction}
-              onInspect={(dev) => setSelectedDevice(dev)}
-              loading={loading}
-            />
-          </div>
 
-          {/* Live Event Stream */}
-          <LiveTelemetryFeed events={events} wsConnected={wsConnected} />
-        </>
-      )}
+            {/* Live Terminal Stream */}
+            <LiveTelemetryFeed events={events} wsConnected={wsConnected} />
+          </>
+        )}
 
-      {/* TAB 2: ATTACK SIMULATOR (A–G) */}
-      {activeTab === 'attacks' && (
-        <AttackLauncher
-          onAttackLaunched={() => {
-            fetchDevices();
-            setRefreshTrigger((prev) => prev + 1);
-          }}
-        />
-      )}
+        {/* TAB 2: ATTACK SIMULATOR (A–G) */}
+        {activeTab === 'attacks' && (
+          <AttackLauncher
+            onAttackLaunched={() => {
+              fetchDevices();
+              setRefreshTrigger((prev) => prev + 1);
+            }}
+          />
+        )}
 
-      {/* TAB 3: SOC ALERTS & DEFENSE */}
-      {activeTab === 'soc' && (
-        <SOCAlertsFeed
-          onQuarantineDevice={(devId) => handleDeviceAction(devId, 'suspend')}
-          refreshTrigger={refreshTrigger}
-        />
-      )}
+        {/* TAB 3: SOC ALERTS & DEFENSE */}
+        {activeTab === 'soc' && (
+          <SOCAlertsFeed
+            onQuarantineDevice={(devId) => handleDeviceAction(devId, 'suspend')}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
 
-      {/* TAB 4: CRYPTOGRAPHIC AUDIT LEDGER */}
-      {activeTab === 'audit' && (
-        <AuditChainVisualizer />
-      )}
+        {/* TAB 4: CRYPTOGRAPHIC AUDIT LEDGER */}
+        {activeTab === 'audit' && (
+          <AuditChainVisualizer />
+        )}
 
-      {/* TAB 5: FORENSIC INVESTIGATION */}
-      {activeTab === 'forensics' && (
-        <ForensicTimeline devices={devices} />
-      )}
+        {/* TAB 5: FORENSIC INVESTIGATION */}
+        {activeTab === 'forensics' && (
+          <ForensicTimeline devices={devices} />
+        )}
 
-      {/* Slide-over Device Detail Modal */}
-      {selectedDevice && (
-        <DeviceDetailModal
-          device={selectedDevice}
-          onClose={() => setSelectedDevice(null)}
-          onAction={handleDeviceAction}
-        />
-      )}
+        {/* Slide-over Device Detail Modal */}
+        {selectedDevice && (
+          <DeviceDetailModal
+            device={selectedDevice}
+            onClose={() => setSelectedDevice(null)}
+            onAction={handleDeviceAction}
+          />
+        )}
+      </main>
     </div>
   );
 };

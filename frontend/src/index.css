@@ -1,60 +1,61 @@
 /* ============================================================
-   Virtual IoT Security Laboratory — Global Styles
-   Phase 0: Foundation layout and CSS variables
+   Virtual IoT Security Laboratory — Enterprise SOC Theme
+   High-Precision Cybersecurity Dark Palette & Micro-Animations
    ============================================================ */
 
 :root {
-  /* Color palette — dark security theme */
-  --color-bg-primary: #0d1117;
-  --color-bg-secondary: #161b22;
-  --color-bg-card: #1c2128;
-  --color-bg-hover: #21262d;
+  /* Surface colors — Obsidian Dark */
+  --color-bg-base: #070a11;
+  --color-bg-primary: #0b111e;
+  --color-bg-secondary: #0f172a;
+  --color-bg-card: #131e33;
+  --color-bg-card-hover: #17243c;
+  --color-bg-input: #090e18;
 
-  --color-border: #30363d;
-  --color-border-subtle: #21262d;
-
-  --color-text-primary: #e6edf3;
-  --color-text-secondary: #8b949e;
-  --color-text-muted: #6e7681;
-
-  --color-accent-blue: #2f81f7;
-  --color-accent-green: #3fb950;
-  --color-accent-yellow: #d29922;
-  --color-accent-orange: #d18616;
-  --color-accent-red: #f85149;
-  --color-accent-purple: #a371f7;
-  --color-accent-teal: #39c5cf;
-
-  /* Severity colors */
-  --color-severity-low: #3fb950;
-  --color-severity-medium: #d29922;
-  --color-severity-high: #f0883e;
-  --color-severity-critical: #f85149;
-
-  /* Device status colors */
-  --color-status-online: #3fb950;
-  --color-status-offline: #8b949e;
-  --color-status-suspended: #d29922;
-  --color-status-revoked: #f85149;
-
-  /* Layout */
-  --sidebar-width: 240px;
-  --header-height: 56px;
-  --border-radius: 6px;
-  --border-radius-lg: 12px;
+  /* Borders */
+  --color-border: #1e293b;
+  --color-border-subtle: #172338;
+  --color-border-bright: #334155;
 
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
-  --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 24px;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* Cyber Accents */
+  --color-accent-cyan: #06b6d4;
+  --color-accent-blue: #38bdf8;
+  --color-accent-indigo: #6366f1;
+  --color-accent-purple: #a855f7;
+  --color-accent-green: #10b981;
+  --color-accent-yellow: #f59e0b;
+  --color-accent-orange: #f97316;
+  --color-accent-red: #ef4444;
+
+  /* Severity Levels */
+  --color-severity-low: #10b981;
+  --color-severity-medium: #f59e0b;
+  --color-severity-high: #f97316;
+  --color-severity-critical: #ef4444;
+
+  /* Device Status */
+  --color-status-online: #10b981;
+  --color-status-offline: #64748b;
+  --color-status-suspended: #f59e0b;
+  --color-status-revoked: #ef4444;
+
+  /* Layout & Geometry */
+  --border-radius-sm: 4px;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, Menlo, monospace;
 }
 
-/* Reset */
+/* Reset & Global */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -62,75 +63,91 @@
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
 }
 
 body {
-  font-family: var(--font-family);
-  font-size: var(--font-size-base);
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
   color: var(--color-text-primary);
-  background-color: var(--color-bg-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(168, 85, 247, 0.03) 0%, transparent 45%),
+    linear-gradient(180deg, #070a11 0%, #090e18 100%);
+  background-attachment: fixed;
 }
 
-/* Links */
-a {
-  color: var(--color-accent-blue);
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
+/* Typography Helpers */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-/* Scrollbar */
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: #1e293b;
   border-radius: 4px;
 }
-
-/* Code */
-code, pre {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-sm);
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
-/* Utility classes */
-.text-muted { color: var(--color-text-muted); }
-.text-secondary { color: var(--color-text-secondary); }
-.text-mono { font-family: var(--font-family-mono); }
-
-.status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 6px;
+/* Keyframe Animations */
+@keyframes pulseRadar {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 0.2; }
+  100% { transform: scale(0.9); opacity: 0.8; }
 }
-.status-dot.online { background-color: var(--color-status-online); }
-.status-dot.offline { background-color: var(--color-status-offline); }
-.status-dot.suspended { background-color: var(--color-status-suspended); }
-.status-dot.revoked { background-color: var(--color-status-revoked); }
 
-.severity-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+@keyframes glowCritical {
+  0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 22px rgba(239, 68, 68, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
 }
-.severity-badge.low { background: rgba(63, 185, 80, 0.15); color: var(--color-severity-low); }
-.severity-badge.medium { background: rgba(210, 153, 34, 0.15); color: var(--color-severity-medium); }
-.severity-badge.high { background: rgba(240, 136, 62, 0.15); color: var(--color-severity-high); }
-.severity-badge.critical { background: rgba(248, 81, 73, 0.15); color: var(--color-severity-critical); }
 
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Utility Badges & Chips */
+.badge-threat-normal {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-threat-critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  animation: glowCritical 2s infinite ease-in-out;
+}
+
+/* Interactive Card Effects */
+.soc-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.soc-card:hover {
+  background: var(--color-bg-card-hover);
+  border-color: #2a3a52;
+  transform: translateY(-1px);
+}
