@@ -3,6 +3,8 @@
 > **An enterprise-grade, software-defined IoT Security Laboratory and Security Operations Center (SOC).**  
 > Complete with Proteus ARM7 LPC2138 hardware simulation, cryptographic audit ledger, real-time intrusion detection, and automated attack scenario simulation.
 
+🔗 **[Live Demo](https://virtual-iot-security-laboratory.onrender.com/)** · **[GitHub Repository](https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory)**
+
 [![CI Pipeline](https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory/actions/workflows/ci.yml/badge.svg)](https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory/actions)
 [![Tests Passing](https://img.shields.io/badge/Tests-117%20Passed%20%2F%200%20Failed-success)](#)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Tushar8767/Virtual-IoT-Security-Laboratory)
